@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link href="../layui/css/layui.css" rel="stylesheet">
+    <title>查看详细信息</title>
+</head>
+<body>
+<table id="demoTable" lay-filter="demoTable"></table>
+<script id="barDemo" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
+    </div>
+</script>
+<script id="demo-toolbar-setRowChecked" type="text/html">
+    <div class="layui-btn-container">
+    </div>
+</script>
+<script src="../layui/layui.js"></script>
+<script>
+    //JS 调用：
+    layui.use(['table', 'form'], function () {
+        var $ = layui.$;
+        var table = layui.table;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        var rate = layui.rate;
+        var url = window.location.search;
+        var id = url.substring(url.indexOf('=') + 1);
+
+
+        table.render({
+            elem: '#demoTable',
+            toolbar: 'default',
+            url: '../../student/getCourse?id=' + id,
+            height: 'full-200',
+            lineStyle: 'height: 64px;',
+            page: false,
+            cols: [[{field: 'id', title: 'ID'},
+                {field: 'username', title: '学生名字'},
+                {field: 'name', title: '课程类型'},
+                {field: 'title', title: '课程标题'},
+                {field: 'start_time', title: '开始时间'},
+                {field: 'end_time', title: '结束时间'},
+                {field: 'sign_time', title: '签到时间'},
+                {
+                    field: 'score', title: '课堂表现', templet: function (d) {
+                        return '<div id="Score' + d.id + '"></div>'
+                    }
+                }, {
+                    field: 'points3', title: '课堂之星', templet: function (d) {
+                        return '<div id="dScore' + d.id + '"></div>'
+                    }
+                }
+            ]], done: function (res, curr, count) {
+                var data = res.data;
+                for (var item in data) {
+                    rate.render({
+                        elem: '#Score' + data[item].id + ''
+                        , length: 5
+                        , value: data[item].points1
+                        , half: true
+                        , text: false
+                        , readonly: true
+                    });
+                    rate.render({
+                        elem: '#dScore' + data[item].id + ''
+                        , theme: '#f30808'
+                        , length: 1
+                        , value: data[item].points4
+                        , half: true
+                        , text: false
+                        , readonly: true
+                    });
+                }
+            }
+
+        });
+
+        //触发事件
+        table.on('tool(demoTable)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'delete':
+                    $.ajax({
+                        url: './api/user/' + obj.data.id,
+                        type: 'DELETE',
+                        success: function (res) {
+                            if (res.code === 0) {
+                                layer.msg('删除成功');
+                                obj.del();
+                            } else {
+                                layer.msg('删除失败');
+                            }
+                        }
+                    });
+                    break;
+            }
+        });
+        form.on('submit(table-search)', function (data) {
+            var field = data.field;
+            // 执行搜索重载
+            table.reload('demoTable', {
+                page: {
+                    curr: 1
+                },
+                where: field
+            });
+            layer.msg('搜索成功');
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

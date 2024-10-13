@@ -13,6 +13,10 @@ class Record
     public function getPointsList($page = 1, $limit = 10, $username = null,$id=null)
     {
         $user = checkLogin();
+        if ($user['type'] == 1) {
+           $id = $user['uid'];
+           $username = null;
+        }
         $data = Db::table('tb_record_points')
             ->leftjoin('tb_user_student', 'tb_record_points.sid=tb_user_student.id')
             ->field('tb_record_points.*,tb_user_student.username as username');
@@ -22,6 +26,10 @@ class Record
     public function getMatchList($page = 1, $limit = 10, $username = null,$id=null)
     {
         $user = checkLogin();
+        if ($user['type'] == 1) {
+            $id = $user['uid'];
+            $username = null;
+        }
         $data = Db::table('tb_record_match')
             ->leftjoin('tb_user_student', 'tb_record_match.sid=tb_user_student.id')
             ->field('tb_record_match.*,tb_user_student.username as username');
@@ -30,6 +38,10 @@ class Record
     public function getRenewalList($page = 1, $limit = 10, $username = null,$id=null)
     {
         $user = checkLogin();
+        if ($user['type'] == 1) {
+            $id = $user['id'];
+            $username = null;
+        }
         $data = Db::table('tb_record_renewal')
             ->leftjoin('tb_user_student', 'tb_record_renewal.sid=tb_user_student.id')
             ->field('tb_record_renewal.*,tb_user_student.username as username');
@@ -39,6 +51,10 @@ class Record
     public function getCourseList($page = 1, $limit = 10, $username = null)
     {
         $user = checkLogin();
+        if ($user['type'] == 1) {
+            $id = $user['uid'];
+            $username = null;
+        }
         $data = Db::table('tb_record_course')
 //            ->leftjoin('tb_user_student','tb_record_course.sid=tb_user_student.id')
             ->leftjoin('tb_user', 'tb_record_course.tid=tb_user.id')
@@ -103,21 +119,91 @@ class Record
         if (isset($data['sid'])||$data['sid']!=null||$data['sid']!='') {
             unset($data['username']);
         }
+        $score0=0;
+        //如果ID=0则新增
+        if ($data['id'] == 0||$data['id']==null||$data['id']=='') {
+            unset($data['id']);
+        }else{
+            $score0=Db::table('tb_record_points')->where('id',$data['id'])->value('score');
+        }
+        try {
+            Db::table('tb_record_points')->save($data);
+            $sid = $data['sid'];
+            $score = Db::table('tb_user_student')->where('id', $sid)->value('score');
+            Db::table('tb_user_student')->where('id', $sid)->update(['score' => $score-$score0+$data['score']]);
+        } catch (\Exception $e) {
+            return (returnJson(1, $e->getMessage()));
+        }
+        return (returnJson(0, 'success'));
+    }
+
+    public function saveMatch()
+    {
+        $user = checkLogin();
+        if ($user['type'] != 3) {
+            return (returnJson(1, '无权限'));
+        }
+        $data = input('post.');
+        //如果存在id 则去掉username和sid
+        if (isset($data['id'])||$data['id']!=null||$data['id']!='') {
+            unset($data['username']);
+
+        }
+        //如果存在sid 则去掉id和username
+        if (isset($data['sid'])||$data['sid']!=null||$data['sid']!='') {
+            unset($data['username']);
+        }
 
         //如果ID=0则新增
         if ($data['id'] == 0||$data['id']==null||$data['id']=='') {
             unset($data['id']);
         }
         try {
-            Db::table('tb_record_points')->save($data);
+            Db::table('tb_record_match')->save($data);
             $sid = $data['sid'];
-            $points = Db::table('tb_record_points')->where('sid', $sid)->sum('score');
-            Db::table('tb_user_student')->where('id', $sid)->update(['score' => $points]);
+//            $points = Db::table('tb_record_match')->where('sid', $sid)->sum('score');
+//            Db::table('tb_user_student')->where('id', $sid)->update(['score' => $points]);
         } catch (\Exception $e) {
             return (returnJson(1, $e->getMessage()));
         }
         return (returnJson(0, 'success'));
     }
+
+    public function saveRenewal()
+    {
+        $user = checkLogin();
+        if ($user['type'] != 3) {
+            return (returnJson(1, '无权限'));
+        }
+        $data = input('post.');
+        //如果存在id 则去掉username和sid
+        if (isset($data['id'])||$data['id']!=null||$data['id']!='') {
+            unset($data['username']);
+
+        }
+        //如果存在sid 则去掉id和username
+        if (isset($data['sid'])||$data['sid']!=null||$data['sid']!='') {
+            unset($data['username']);
+        }
+        $number=0;
+        //如果ID=0则新增
+        if ($data['id'] == 0||$data['id']==null||$data['id']=='') {
+            unset($data['id']);
+        }else{
+            $number=Db::table('tb_record_renewal')->where('id',$data['id'])->value('number');
+        }
+        try {
+            Db::table('tb_record_renewal')->save($data);
+            $sid = $data['sid'];
+            $rclass=Db::table('tb_user_student')->where('id',$sid)->value('rclass');
+
+           Db::table('tb_user_student')->where('id', $sid)->update(['rclass' => $rclass+$data['number']-$number,'rtime'=>$data['time']]);
+        } catch (\Exception $e) {
+            return (returnJson(1, $e->getMessage()));
+        }
+        return (returnJson(0, 'success'));
+    }
+
 
     //下面为删除
 
@@ -138,5 +224,38 @@ class Record
         }
         return (returnJson(0, 'success'));
     }
-
+    public function deleteMatch()
+    {
+        $user = checkLogin();
+        if ($user['type'] != 3) {
+            return (returnJson(1, '无权限'));
+        }
+        $id = input('post.id');
+        $sid = input('post.sid');
+        try {
+            Db::table('tb_record_match')->where('id', $id)->delete();
+//            $points = Db::table('tb_record_match')->where('sid', $sid)->sum('score');
+//            Db::table('tb_user_student')->where('id', $sid)->update(['score' => $points]);
+        } catch (\Exception $e) {
+            return (returnJson(1, $e->getMessage()));
+        }
+        return (returnJson(0, 'success'));
+    }
+    public function deleteRenewal()
+    {
+        $user = checkLogin();
+        if ($user['type'] != 3) {
+            return (returnJson(1, '无权限'));
+        }
+        $id = input('post.id');
+        try {
+            $data= Db::table('tb_record_renewal')->where('id', $id)->field('sid,number')->find();
+            Db::table('tb_record_renewal')->where('id', $id)->delete();
+            $rclass=Db::table('tb_user_student')->where('id',$data['sid'])->value('rclass');
+            Db::table('tb_user_student')->where('id', $data['sid'])->update(['rclass' => $rclass-$data['number']]);
+        } catch (\Exception $e) {
+            return (returnJson(1, $e->getMessage()));
+        }
+        return (returnJson(0, 'success'));
+    }
 }

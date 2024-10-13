@@ -1,0 +1,32 @@
+[
+  {
+    "title": "首页",
+    "name": "index"
+  },
+  {
+    "title": "记录查看",
+    "name": "record",
+    "children": [
+      {
+        "title": "积分记录",
+        "name": "points"
+      },
+      {
+        "title": "参赛记录",
+        "name": "match"
+      },
+      {
+        "title": "课程记录",
+        "name": "course"
+      },
+      {
+        "title": "续费记录",
+        "name": "renew"
+      }
+    ]
+  },
+  {
+    "title": "个人中心",
+    "name": "profile"
+  }
+]

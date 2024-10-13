@@ -1,0 +1,155 @@
+<form class="layui-form layui-row layui-col-space16">
+    <div class="layui-row layui-col-space16">
+        <div class="layui-col-md4">
+            <div class="layui-input-wrap">
+                <input autocomplete="off" class="layui-input" name="title"
+                       placeholder="班级名" type="text">
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <button class="layui-btn" lay-filter="table-search" lay-submit>搜索</button>
+            <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+        </div>
+    </div>
+</form>
+<table id="demoTable" lay-filter="demoTable"></table>
+<script id="barDemo" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="check">查看</button>
+        <!--        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>-->
+    </div>
+</script>
+<script id="demo-toolbar-setRowChecked" type="text/html">
+    <div class="layui-btn-container">
+    </div>
+</script>
+
+<script>
+    //JS 调用：
+    layui.use(['table', 'form'], function () {
+        var $ = layui.$;
+        var table = layui.table;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        var rate = layui.rate;
+
+        table.render({
+            elem: '#demoTable',
+            toolbar: 'default',
+            url: '../admin/getClassList',
+            height: 'full-200',
+            // lineStyle: 'height: 64px;',
+            page: true,
+            cols: [[
+                {type: 'radio', title: '', fixed: true},
+                {field: 'id', title: 'ID', width: 80},
+                {field: 'subject_name', title: '班级类型'},
+                {field: 'title', title: '班级名', width: 360},
+                {field: 'username', title: '老师'},
+                {field: 'student_count', title: '学生人数'},
+                {fixed: 'right', title: '操作', toolbar: '#barDemo'}
+            ]],
+
+        });
+
+        //触发事件
+        table.on('tool(demoTable)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'check':
+                    layer.open({
+                        type: 2,
+                        title: '查看',
+                        content: '../static/iframe/checkClass.html?id=' + obj.data.id,
+                        area: ['60%', '60%'],
+                        maxmin: true,
+                        end: function () {
+                            table.reload('demoTable');
+                        }
+                    })
+                    break;
+            }
+        });
+        table.on('toolbar(demoTable)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 2,
+                        title: '添加',
+                        content: '../static/iframe/editClass.html?id=0',
+                        area: ['80%', '80%'],
+                        maxmin: true,
+                        end: function () {
+                            table.reload('demoTable');
+                        }
+                    })
+                    //table.reload('demoTable');
+                    break;
+                case 'delete':
+                    if (checkStatus.data.length === 0) {
+                        layer.msg('请先选中班级');
+                        return;
+                    }
+                    if (checkStatus.data[0].id === 0) {
+                        layer.msg('不允许删除0号班级');
+                        return;
+                    }
+                    layer.confirm('真的删除行么', function (index) {
+                        //向服务端发送删除指令
+                        $.ajax({
+                            url: '../admin/deleteClass/',
+                            type: 'DELETE',
+                            data: {"id": checkStatus.data[0].id},
+                            success: function (res) {
+                                if (res.code === 0) {
+                                    layer.msg('删除成功');
+                                    table.reload('demoTable');
+                                } else {
+                                    layer.msg('删除失败');
+                                }
+                            }
+                        });
+                        layer.close(index);
+                    });
+                    break;
+                case 'update':
+                    //判断是否先选中
+                    if (checkStatus.data.length === 0) {
+                        layer.msg('请先选中班级');
+                        return;
+                    }
+                    if (checkStatus.data[0].id === 0) {
+                        layer.msg('不允许编辑0号班级');
+                        return;
+                    }
+                    layer.open({
+                        type: 2,
+                        title: '编辑',
+                        content: '../static/iframe/editClass.html?id=' + checkStatus.data[0].id + "&title=" + checkStatus.data[0].username,
+                        area: ['80%', '80%'],
+                        maxmin: true,
+                        end: function () {
+                            table.reload('demoTable');
+                        }
+
+                    })
+                    // table.reload('demoTable');
+                    break;
+            }
+        });
+        form.on('submit(table-search)', function (data) {
+            var field = data.field;
+            // 执行搜索重载
+            table.reload('demoTable', {
+                page: {
+                    curr: 1
+                },
+                where: field
+            });
+            layer.msg('搜索成功');
+            return false;
+        });
+    });
+</script>

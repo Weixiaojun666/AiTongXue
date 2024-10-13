@@ -1,0 +1,292 @@
+<div style="padding: 15px;">
+
+    <script id="TPL" type="text/html">
+        <div class="layui-row layui-col-space8">
+            <div class="layui-col-xs6">
+                <blockquote class="layui-elem-quote layui-text">
+                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师</h3>
+                </blockquote>
+            </div>
+            <div class="layui-col-xs6">
+                <blockquote class="layui-elem-quote layui-text">
+                    <h3 style="align-content: center">{{ d.state }}</h3>
+                </blockquote>
+            </div>
+        </div>
+    </script>
+    <div id="view"></div>
+
+
+    <div class="layui-row layui-col-space8">
+        <div class="layui-col-xs6">
+            <div class="layui-card layui-panel">
+                <div class="layui-card-header">
+                    开始上课
+                </div>
+                <div class="layui-card-body">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">课程标题</label>
+                            <div class="layui-input-block">
+                                <input autocomplete="off" class="layui-input" lay-verify="required" name="title"
+                                       placeholder="请输入" type="text">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">课程类型</label>
+                            <div class="layui-input-block">
+                                <select lay-filter="subject" name="sid">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-filter="demo_start" lay-submit>开始上课</button>
+                                <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs6">
+            <div class="layui-card layui-panel">
+                <div class="layui-card-header">
+                    结束上课
+                </div>
+                <div class="layui-card-body">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">课堂之星</label>
+                            <div class="layui-input-block">
+                                <select lay-filter="subject" name="star">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">备注</label>
+                            <div class="layui-input-block">
+                                <input autocomplete="off" class="layui-input" name="remark"
+                                       placeholder="请输入" type="text">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-filter="demo_end" lay-submit>结束上课</button>
+                                <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-card layui-panel">
+    <div class="layui-card-header">
+        已进入课堂学生
+    </div>
+    <div class="layui-card-body">
+        <table id="demoTable" lay-filter="demoTable"></table>
+    </div>
+</div>
+
+</div>
+<script id="barDemo" type="text/html">
+    <div class="layui-clear-space">
+        <a class="layui-btn layui-btn-xs" lay-event="remove">移除</a>
+    </div>
+</script>
+<script>
+    layui.use(function () {
+        var $ = layui.$;
+        var form = layui.form;
+        var layer = layui.layer;
+        var laydate = layui.laydate;
+        var util = layui.util;
+        var table = layui.table;
+        var rate = layui.rate;
+        var laytpl = layui.laytpl;
+
+        //获取课程列表
+        $.ajax({
+            url: '../Teacher/getSubjectList',
+            type: 'GET',
+            success: function (data) {
+                if (data.code === 0) {
+                    var html = '';
+                    for (var i = 0; i < data.data.length; i++) {
+                        html += '<option value="' + data.data[i].id + '">' + data.data[i].name + '</option>';
+                    }
+                    $('select[name=sid]').append(html);
+                    form.render('select');
+                } else {
+                    layer.msg(data.msg, {icon: 2});
+                }
+            }
+        });
+
+
+        function UpdateInfo() {
+            //获取当前正在上课的信息
+            $.ajax({
+                url: '../Teacher/getInfo',
+                type: 'GET',
+                success: function (data) {
+                    if (data.code === 0) {
+                        var state = '当前未上课';
+                        if (data.data.course !== null) {
+                            $('input[name=title]').val(data.data.course.title);
+                            $('select[name=sid]').val(data.data.course.sid);
+                            //如果有正在上课的信息 就将开始上课按钮改成 修改课程信息
+                            $('button[lay-filter=demo_start]').text('修改课程信息');
+                            form.render('select');
+                            state = '当前正在上课: ' + data.data.course.title;
+
+                        }
+                        data.data.state = state;
+                        var getTpl = document.getElementById('TPL').innerHTML; // 获取模板字符
+                        var elemView = document.getElementById('view'); // 视图对象
+                        // 渲染并输出结果
+                        laytpl(getTpl).render(data.data, function (str) {
+                            elemView.innerHTML = str;
+                        });
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        }
+
+        function update() {
+            //获取学生列表
+            $.ajax({
+                url: '../Teacher/getStudentList',
+                type: 'GET',
+                success: function (data) {
+                    if (data.code === 0) {
+                        var html = '';
+                        for (var i = 0; i < data.data.length; i++) {
+                            html += '<option value="' + data.data[i].sid + '">' + data.data[i].username + '</option>';
+                        }
+                        $('select[name=star]').html(html);
+                        form.render('select');
+
+                        table.render({
+                            elem: '#demoTable'
+                            , data: data.data
+                            , height: 'full-600'
+                            , lineStyle: 'height: 64px;'
+                            , cols: [[{field: 'id', title: 'ID'},
+                                {field: 'username', title: '学生名'},
+
+                                {
+                                    field: 'score', title: '课堂表现', edit: true, width: 200, templet: function (d) {
+                                        return '<div id="Score' + d.id + '"></div>'
+                                    }
+                                },
+                                {field: 'remark', title: '备注'},
+                                {fixed: 'right', title: '操作', toolbar: '#barDemo'},
+                            ]],
+                            done: function (res, curr, count) {
+                                var data = res.data;//返回的json中data数据
+                                for (var item in data) {
+                                    rate.render({
+                                        elem: '#Score' + data[item].id + ''
+                                        , length: 5
+                                        , value: data[item].score
+                                        , half: true
+                                        , text: false
+                                        , readonly: true
+                                        , choose: function (value) {
+                                            submitScore(data[item].id, 1, value)
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+
+                    } else {
+                        // layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+
+            form.render();
+
+        }
+
+        table.on('edit(demoTable)', function (obj) {
+            var value = obj.value; //得到修改后的值
+            var data = obj.data; //得到所在行所有键值
+            var field = obj.field; //得到字段
+            var id = data.id;
+
+            // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+            submitScore(id, field, value)
+        });
+
+
+        // 提交事件
+        form.on('submit(demo_start)', function (data) {
+            var field = data.field;
+            $.ajax({
+                url: '../Teacher/startClass',
+                type: 'POST',
+                data: field,
+                success: function (data) {
+                    if (data.code === 0) {
+                        layer.msg(data.msg, {icon: 1});
+                        UpdateInfo();
+                        // window.location.href = '/';
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+            return false;
+        });
+        form.on('submit(demo_end)', function (data) {
+            var field = data.field;
+            $.ajax({
+                url: '../Teacher/endClass',
+                type: 'POST',
+                data: field,
+                success: function (data) {
+                    if (data.code === 0) {
+                        layer.msg('结束上课成功', {icon: 1});
+                        UpdateInfo();
+                        update();
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+            return false;
+        });
+        update()
+        UpdateInfo();
+        //每五秒自动刷新
+        // setInterval(update, 5000);
+
+        //提交评分
+        function submitScore(id, type, value) {
+            $.ajax({
+                url: '../Teacher/submitScore',
+                type: 'POST',
+                data: {id: id, type: type, value: value},
+                success: function (data) {
+                    if (data.code === 0) {
+                        layer.msg('评分成功', {icon: 1});
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        }
+    });
+</script>
+

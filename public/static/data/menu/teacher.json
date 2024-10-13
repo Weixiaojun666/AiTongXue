@@ -1,0 +1,24 @@
+[
+  {
+    "title": "首页",
+    "name": "index"
+  },
+  {
+    "title": "记录管理",
+    "name": "admin",
+    "children": [
+      {
+        "title": "积分记录",
+        "name": ""
+      },
+      {
+        "title": "参赛记录",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "title": "个人中心",
+    "name": "profile"
+  }
+]

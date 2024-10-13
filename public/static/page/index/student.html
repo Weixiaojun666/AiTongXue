@@ -1,0 +1,168 @@
+<div style="padding: 15px;">
+    <script id="TPL" type="text/html">
+        <h3 style="align-content: center">您好 {{= d.username }} 同学 </h3>
+        <p>您拥有积分{{= d.score }}</p>
+    </script>
+    <blockquote class="layui-elem-quote layui-text">
+        <div id="view"></div>
+    </blockquote>
+
+<!--    <div class="layui-card layui-panel">-->
+<!--        <div class="layui-card layui-panel">-->
+<!--            <div class="layui-card-header">-->
+<!--                积分记录-->
+<!--            </div>-->
+<!--            <div class="layui-card-body">-->
+<!--                <table class="layui-hide layui-table" id="ID-table-poins"></table>-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="layui-card layui-panel">-->
+<!--        <div class="layui-card layui-panel">-->
+<!--            <div class="layui-card-header">-->
+<!--                上课记录-->
+<!--            </div>-->
+<!--            <div class="layui-card-body">-->
+<!--                <table class="layui-hide layui-table" id="ID-table-class"></table>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+</div>
+<script>
+    layui.use(function () {
+        var $ = layui.$;
+        var table = layui.table;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+        var rate = layui.rate;
+
+
+        var tableIns = table.render({
+            elem: '#ID-table-poins',
+            url: '../Student/getScore',
+            cols: [[
+                {field: 'id', title: 'ID',},
+                {field: 'score', title: '积分'},
+                {field: 'reason', title: '原因'},
+                {field: 'update_time', title: '时间'},
+            ]],
+            page: true,
+            limit: 10,
+            limits: [10, 20, 30, 40, 50],
+        });
+
+        var tableIns = table.render({
+            elem: '#ID-table-class',
+            url: '../Student/getCourse',
+            lineStyle: 'height: 64px;',
+            page: true,
+            // page: true,
+            // limit: 10,
+            // limits: [10, 20, 30, 40, 50],
+            cols: [[
+                {field: 'id', title: 'ID'},
+                {field: 'username', title: '老师'},
+                {field: 'name', title: '课程类型'},
+                {field: 'title', title: '课程标题'},
+                {field: 'start_time', title: '开始时间'},
+                {field: 'end_time', title: '结束时间'},
+                {
+                    field: 'score', title: '课堂表现', templet: function (d) {
+                        return '<div id="Score' + d.id + '"></div>'
+                    }
+                },
+                // {
+                //     field: 'points4', title: '课堂之星', width: 200, templet: function (d) {
+                //         return '<div id="dScore'+d.points4+'"></div>'
+                //     }
+                // },
+                {field: 'remark', title: '备注', width: 80},
+            ]],
+            done: function (res, curr, count) {
+                var data = res.data;
+                for (var item in data) {
+                    rate.render({
+                        elem: '#Score' + data[item].id + ''
+                        , length: 5
+                        , value: data[item].points1
+                        , half: true
+                        , text: false
+                        , readonly: true
+                    });
+                    rate.render({
+                        elem: '#dScore' + data[item].id + ''
+                        , theme: '#f30808'
+                        , length: 1
+                        , value: data[item].points4
+                        , half: true
+                        , text: false
+                        , readonly: true
+                    });
+                }
+            }
+
+        });
+
+        form.on('submit(sign)', function (data) {
+            $.ajax({
+                url: '../Student/sign',
+                type: 'POST',
+                data: {cid: data.field.teacher},
+                success: function (data) {
+                    if (data.code === 0) {
+                        layer.msg('签到成功', {icon: 1});
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+
+
+                }
+            });
+            return false;
+        });
+        //获取当前正在上课的老师
+        var getTeacherList = function () {
+            $.ajax({
+                url: '../Student/getTeacherList',
+                type: 'GET',
+                success: function (data) {
+                    if (data.code === 0) {
+                        var html = '';
+                        for (var i = 0; i < data.data.length; i++) {
+                            html += '<option value="' + data.data[i].id + '">' + '[' + data.data[i].username + '][' + data.data[i].name + '] ' + data.data[i].title + '</option>';
+                        }
+                        $('select[name=teacher]').html(html);
+                        form.render('select');
+
+
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        };
+        //获取学生信息
+        var getStudentInfo = function (TPl) {
+            $.ajax({
+                url: '../Student/getInfo',
+                type: 'GET',
+                success: function (data) {
+                    if (data.code === 0) {
+                        laytpl(TPl).render(data.data, function (html) {
+                            $('#view').html(html);
+                        });
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        };
+        getStudentInfo(TPL.innerHTML);
+        //getTeacherList();
+
+
+    });
+
+</script>
