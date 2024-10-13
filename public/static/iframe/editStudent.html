@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="../layui/css/layui.css" rel="stylesheet">
+    <title>编辑学生信息</title>
+</head>
+<body>
+<div class="layui-body" style="padding: 15px;width: 75%">
+    <form action="" class="layui-form" lay-filter="form">
+        <div class="layui-form-item" hidden="hidden">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-inline">
+
+                <input autocomplete="off" class="layui-input layui-disabled" disabled name="id" type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" lay-verify="required" name="username" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">积分</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" lay-verify="required" name="score" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">剩余课次</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" lay-verify="required" name="rclass" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">入学时间</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" lay-verify="required" name="atime" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" name="remark" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-filter="demo1" lay-submit type="submit">立即提交</button>
+                <!--                <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+            </div>
+        </div>
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label">自动关闭</label>-->
+        <!--            <div class="layui-input-block">-->
+        <!--                <input lay-filter="switchTest" lay-skin="switch" name="switch" title="ON|OFF" type="checkbox">-->
+        <!--            </div>-->
+        <!--        </div>-->
+    </form>
+</div>
+<script src="../layui/layui.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: 'input[name="atime"]'
+        });
+
+        var search = window.location.search;
+        if (search !== '') {
+            var query = decodeURI(search);
+            var currentId = query.substring(query.indexOf('=') + 1);
+            params = JSON.parse(currentId);
+            form.val('form', params);
+        }
+
+        // var params = JSON.parse('{"' + decodeURI(search.substring(1))
+        //    .replace(/&/g, '","')
+        //    .replace(/=/g, '":"') + '"}');
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            var s = data.field.switch;
+            delete data.field.switch;
+            $.ajax({
+                url: '../../admin/saveStudent',
+                type: 'POST',
+                data: data.field,
+                success: function (res) {
+                    if (res.code === 0) {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layui.table.reload('demoTable');
+                        parent.layer.close(index);
+                        layer.msg('成功');
+                    } else {
+                        layer.msg('失败');
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

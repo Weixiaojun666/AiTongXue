@@ -89,8 +89,8 @@ class Teacher
     public function endClass()
     {
         $user = checkLogin();
-        if ($user['type'] != 1) {
-            exit(returnJson(1, '无权限'));
+        if ($user['type'] != 2) {
+            return (returnJson(0, '无权限'));
         }
         $result = Db::table('tb_record_course')->where('uid', $user['uid'])->where('end_time', null)->find();
         if (!$result) {
@@ -176,8 +176,8 @@ class Teacher
     public function getSubjectList()
     {
         $user = checkLogin();
-        if ($user['type'] != 1) {
-            exit(returnJson(1, '无权限'));
+        if ($user['type'] != 2) {
+            return (returnJson(0, '无权限'));
         }
         $data = Db::table('tb_record_subject')->where("state", 1)->select();
         return returnJson(0, 'success', $data, count($data));

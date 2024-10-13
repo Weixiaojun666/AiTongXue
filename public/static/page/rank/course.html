@@ -1,0 +1,156 @@
+<div style="padding: 50px">
+    <h1 style="text-align: center;">课程表</h1>
+    <br>
+    <div class="layui-inline" id="ID-laydate-holidays"></div>
+
+    <table class="layui-hide layui-table" id="course-table" lay-skin="nob"></table>
+
+</div>
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.$;
+        var laydate = layui.laydate;
+
+        table.render({
+            elem: '#course-table'
+            , url: '../api/getCourseTable'
+            , skin: 'row'
+            , cols: [[
+                {field: 'time', title: '时间'}
+                , {
+                    field: 'w1', title: '星期一', templet: function (d) {
+                        return ''
+                    }
+                }
+                , {
+                    field: 'w2', title: '星期二', templet: function (d) {
+                        return ''
+                    }
+                }
+                , {
+                    field: 'w3', title: '星期三', templet: function (d) {
+                        return ''
+                    }
+                }
+                , {
+                    field: 'w4', title: '星期四', templet: function (d) {
+                        return ''
+                    }
+                }
+                , {
+                    field: 'w5', title: '星期五', templet: function (d) {
+                        return ''
+                    }
+                }
+                , {
+                    field: 'w6', title: '星期六', templet: function (d) {
+                        return ''
+                    }
+                }
+                , {
+                    field: 'w7', title: '星期日', templet: function (d) {
+                        return ''
+                    }
+                }
+            ]],
+            done: function (res, curr, count) {
+                //根据不同的数字，填充不同的颜色
+                var data = res.data;
+                for (var item in data) {
+                    if (data[item].w1 === 1) {
+                        $('td[data-field="w1"]').eq(item).css('background-color', '#009688');
+                    }
+                    if (data[item].w2 === 1) {
+                        $('td[data-field="w2"]').eq(item).css('background-color', '#009688');
+                    }
+                    if (data[item].w3 === 1) {
+                        $('td[data-field="w3"]').eq(item).css('background-color', '#009688');
+                    }
+                    if (data[item].w4 === 1) {
+                        $('td[data-field="w4"]').eq(item).css('background-color', '#009688');
+                    }
+                    if (data[item].w5 === 1) {
+                        $('td[data-field="w5"]').eq(item).css('background-color', '#009688');
+                    }
+                    if (data[item].w6 === 1) {
+                        $('td[data-field="w6"]').eq(item).css('background-color', '#009688');
+                    }
+                    if (data[item].w7 === 1) {
+                        $('td[data-field="w7"]').eq(item).css('background-color', '#009688');
+                    }
+                    // 如果等于2 则填充#FFB800
+                    if (data[item].w1 === 2) {
+                        $('td[data-field="w1"]').eq(item).css('background-color', '#FFB800');
+                    }
+                    if (data[item].w2 === 2) {
+                        $('td[data-field="w2"]').eq(item).css('background-color', '#FFB800');
+                    }
+                    if (data[item].w3 === 2) {
+                        $('td[data-field="w3"]').eq(item).css('background-color', '#FFB800');
+                    }
+                    if (data[item].w4 === 2) {
+                        $('td[data-field="w4"]').eq(item).css('background-color', '#FFB800');
+                    }
+                    if (data[item].w5 === 2) {
+                        $('td[data-field="w5"]').eq(item).css('background-color', '#FFB800');
+                    }
+                    if (data[item].w6 === 2) {
+                        $('td[data-field="w6"]').eq(item).css('background-color', '#FFB800');
+                    }
+                    if (data[item].w7 === 2) {
+                        $('td[data-field="w7"]').eq(item).css('background-color', '#FFB800');
+                    }
+                    // 如果等于3 则填充#FF5722
+                    if (data[item].w1 === 3) {
+                        $('td[data-field="w1"]').eq(item).css('background-color', '#FF5722');
+                    }
+                    if (data[item].w2 === 3) {
+                        $('td[data-field="w2"]').eq(item).css('background-color', '#FF5722');
+                    }
+                    if (data[item].w3 === 3) {
+                        $('td[data-field="w1"]').eq(item).css('background-color', '#FF5722');
+                    }
+                    if (data[item].w4 === 3) {
+                        $('td[data-field="w2"]').eq(item).css('background-color', '#FF5722');
+                    }
+                    if (data[item].w5 === 3) {
+                        $('td[data-field="w1"]').eq(item).css('background-color', '#FF5722');
+                    }
+                    if (data[item].w6 === 3) {
+                        $('td[data-field="w2"]').eq(item).css('background-color', '#FF5722');
+                    }
+                    if (data[item].w7 === 3) {
+                        $('td[data-field="w1"]').eq(item).css('background-color', '#FF5722');
+                    }
+
+
+                }
+
+
+            }
+
+        });
+        laydate.render({
+            elem: '#ID-laydate-holidays',
+            value: '2023-05-08',
+            holidays: [ // v2.7.3 新增
+                ['2022-12-31', '2023-1-1', '2023-1-2', '2023-1-21', '2023-1-22', '2023-1-23', '2023-1-24', '2023-1-25', '2023-1-26', '2023-1-27', '2023-4-5', '2023-4-29', '2023-4-30', '2023-5-1', '2023-5-2', '2023-5-3', '2023-6-22', '2023-6-23', '2023-6-24', '2023-9-29', '2023-9-30', '2023-10-1', '2023-10-2', '2023-10-3', '2023-10-4', '2023-10-5', '2023-10-6'],
+                // 2023 年的补班日
+                ['2023-1-28', '2023-1-29', '2023-4-23', '2023-5-6', '2023-6-25', '2023-10-7', '2023-10-8']
+            ],
+            mark: {
+                '0-10-14': '生日',
+                '0-12-31': '跨年', //每年的日期
+                '0-0-10': '工资', //每月某天
+                '0-0-15': '月中',
+                '2017-8-15': '', //如果为空字符，则默认显示数字+徽章
+                '2099-10-14': '呵呵'
+            },
+            calendar: true,
+            position: 'static'
+        });
+
+    });
+</script>

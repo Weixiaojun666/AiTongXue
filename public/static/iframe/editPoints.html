@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="../layui/css/layui.css" rel="stylesheet">
+    <title>编辑积分信息</title>
+</head>
+<body>
+<div class="layui-body" style="padding: 15px;width: 75%">
+    <form action="" class="layui-form" lay-filter="form">
+        <div class="layui-form-item" hidden="hidden">
+            <label class="layui-form-label">ID</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input layui-disabled" disabled name="id" type="text">
+            </div>
+        </div>
+        <div class="layui-form-item" hidden="hidden">
+            <label class="layui-form-label">SID</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input layui-disabled" disabled name="sid" type="text">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" id="username">姓名</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" name="username" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">变动积分</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" lay-verify="required|number" name="score" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">变动原因</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" lay-verify="required" name="reason" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">变动时间</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" lay-verify="required" name="time" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-inline">
+                <input autocomplete="off" class="layui-input" name="remark" placeholder="请输入"
+                       type="text">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-filter="demo1" lay-submit type="submit">立即提交</button>
+                <!--                <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+            </div>
+        </div>
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label">自动关闭</label>-->
+        <!--            <div class="layui-input-block">-->
+        <!--                <input lay-filter="switchTest" lay-skin="switch" name="switch" title="ON|OFF" type="checkbox">-->
+        <!--            </div>-->
+        <!--        </div>-->
+    </form>
+</div>
+<script src="../layui/layui.js"></script>
+<script>
+    layui.use('form', function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: 'input[name="time"]',
+            type: 'datetime',
+            fullPanel: true
+        });
+        var search = window.location.search;
+        if (search !== '') {
+            var query = decodeURI(search);
+            var key = query.substring(1, query.indexOf('='));
+            var currentId = query.substring(query.indexOf('=') + 1);
+            if (key === 'data') {
+                params = JSON.parse(currentId);
+                form.val('form', params);
+            }
+            if (key === 'sid' && currentId !== null) {
+               //隐藏 username div
+                $('input[name="sid"]').val(currentId);
+                $('#username').parent().hide();
+            }
+        }
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            var s = data.field.switch;
+            delete data.field.switch;
+            $.ajax({
+                url: '../../record/savePoints',
+                type: 'POST',
+                data: data.field,
+                success: function (res) {
+                    if (res.code === 0) {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layui.table.reload('demoTable');
+                        parent.layer.close(index);
+                        layer.msg('成功');
+                    } else {
+                        layer.msg('失败');
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <link href="../layui/css/layui.css" rel="stylesheet">
+    <title>查看详细信息</title>
+</head>
+<body>
+<div class="layui-body" style="padding: 15px;width: 75%">
+    <div id="ID-transfer-demo-value"></div>
+</div>
+<script src="../layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        var $ = layui.$;
+        var transfer = layui.transfer;
+        var url = window.location.search;
+        var id = url.substring(url.indexOf('=') + 1);
+
+
+        $.ajax({
+            url: '../../admin/getClassStudentList?id=' + id,
+            type: 'GET',
+            success: function (res) {
+                var data = res.data;
+                var data0 = res.data0;
+
+                transfer.render({
+                    elem: '#ID-transfer-demo-value',
+                    data: data0,
+                    value: data,
+                    title: ['所有学生', '当前班级学生'],
+                    showSearch: true,
+                    onchange: function (obj, type) {
+                        //只取obj中的value转换成列表传回
+                        var value = [];
+                        for (var i = 0; i < obj.length; i++) {
+                            value.push(obj[i].value);
+                        }
+                        $.ajax({
+                            url: '../../admin/updateClassStudentList',
+                            type: 'POST',
+                            data: {"id": id, 'type': type, "value": value},
+                            success: function (res) {
+                                if (res.code === 0) {
+                                    layer.msg('更新成功');
+                                } else {
+                                    layer.msg('更新失败');
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+[
+  {
+    "title": "首页",
+    "name": "index"
+  },
+  {
+    "title": "综合管理",
+    "name": "admin",
+    "children": [
+      {
+        "title": "学生管理",
+        "name": "student"
+      },
+      {
+        "title": "课程管理",
+        "name": "course"
+      },
+      {
+        "title": "用户管理",
+        "name": "user"
+      },
+      {
+        "title": "班级管理",
+        "name": "class"
+      }
+    ]
+  },
+  {
+    "title": "记录查看",
+    "name": "record",
+    "children": [
+      {
+        "title": "积分记录",
+        "name": "points"
+      },
+      {
+        "title": "参赛记录",
+        "name": "match"
+      },
+      {
+        "title": "课程记录",
+        "name": "course"
+      },
+      {
+        "title": "续费记录",
+        "name": "renew"
+      }
+    ]
+  },
+  {
+    "title": "个人中心",
+    "name": "personal"
+  }
+]

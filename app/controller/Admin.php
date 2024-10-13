@@ -48,7 +48,7 @@ class Admin
         if ($user['type'] != 3) {
             return (returnJson(1, '无权限'));
         }
-        $data = Db::table('tb_user')->where('type', 1);
+        $data = Db::table('tb_user')->where(['type'=> 2,"state"=>1]);
 //        if ($username) {
 //            $data = $data->where('username', 'like', '%' . $username . '%');
 //        }
@@ -118,7 +118,7 @@ class Admin
             ->leftJoin('tb_course_student cs', 'tb_course.id = cs.cid')
             ->Join('tb_class c', 'tb_course.cid = c.id')
             ->group('tb_course.id')
-            ->field('tb_course.id,tb_course.title,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
+            ->field('tb_course.id,tb_course.title,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expiration_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
 
         $count = $data->count();
         $data = $data->page($page, $limit)
@@ -135,13 +135,24 @@ class Admin
         $data = Db::table('tb_class')->alias('tb_class')
             ->Join('tb_user u', 'tb_class.uid = u.id')
             ->leftJoin('tb_user_student us', 'tb_class.id = us.cid')
+            ->leftJoin('tb_subject s', 'tb_class.sid = s.id')
             ->group('tb_class.id')
-            ->field('tb_class.id,tb_class.title,u.username,count(us.id) as student_count');
+            ->field('tb_class.id,tb_class.title,u.username,count(us.id) as student_count,s.name,s.id as sid,u.id as uid');
 
         $count = $data->count();
         $data = $data->select()->toArray();
         return (returnJson(0, 'success', $data, $count));
+    }
+    public function getClassList0()
+    {
+        $user = checkLogin();
+        if ($user['type'] != 3) {
+            return (returnJson(1, '无权限'));
+        }
+        $data = Db::table('tb_class');
 
+        $data = $data->field('id,title')->select();
+        return (returnJson(0, 'success', $data));
     }
 
 
@@ -152,10 +163,13 @@ class Admin
             return (returnJson(1, '无权限'));
         }
         $data0 = Db::table('tb_user_student')
-            ->join('tb_class', 'tb_user_student.cid=tb_class.id')
-            ->field('tb_user_student.id as value,username as title,tb_class.title as t',)->select()->toArray();
+            ->leftjoin('tb_class', 'tb_user_student.cid=tb_class.id')
+            ->field('tb_user_student.id as value,username as title,tb_class.title as t',)->where('tb_user_student.state', 1)->select()->toArray();
         //将班级名放到学生名前面 [班级名]学生名
         foreach ($data0 as $key => $value) {
+            if ($value['t'] == null) {
+                $value['t'] = '未分配班级';
+            }
             $data0[$key]['title'] = '[' . $value['t'] . ']' . $value['title'];
         }
 
@@ -371,12 +385,15 @@ class Admin
         $week = $data['week'];
 
         $start_time = $data['start_time'];
-
-        preg_match('/(\d+)时(\d+)分/', $start_time, $matches);
-        $start_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
         $end_time = $data['end_time'];
-        preg_match('/(\d+)时(\d+)分/', $end_time, $matches);
-        $end_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
+        $effective_time = $data['effective_time'];
+        $expiration_time = $data['expiration_time'];
+
+//        preg_match('/(\d+)时(\d+)分/', $start_time, $matches);
+//        $start_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
+//        $end_time = $data['end_time'];
+//        preg_match('/(\d+)时(\d+)分/', $end_time, $matches);
+//        $end_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
 
         $data = [
             'title' => $title,
@@ -385,6 +402,8 @@ class Admin
             'cid' => $cid,
             'start_time' => $start_time,
             'end_time' => $end_time,
+            'effective_time' => $effective_time,
+            'expiration_time' => $expiration_time,
             'week' => $week,
         ];
 

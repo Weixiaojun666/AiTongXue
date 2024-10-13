@@ -1,0 +1,159 @@
+<form class="layui-form layui-row layui-col-space16">
+    <div class="layui-row layui-col-space16">
+        <div class="layui-col-md4">
+            <div class="layui-input-wrap">
+                <input autocomplete="off" class="layui-input" name="username"
+                       placeholder="姓名" type="text">
+            </div>
+        </div>
+        <div class="layui-col-md4">
+            <button class="layui-btn" lay-filter="table-search" lay-submit>搜索</button>
+            <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+        </div>
+    </div>
+</form>
+<table id="demoTable" lay-filter="demoTable"></table>
+<script id="barDemo" type="text/html">
+    <div class="layui-btn-container">
+
+        <!--        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>-->
+    </div>
+</script>
+<script id="demo-toolbar-setRowChecked" type="text/html">
+    <div class="layui-btn-container">
+    </div>
+</script>
+
+<script>
+    //JS 调用：
+    layui.use(['table', 'form', 'laydate'], function () {
+        var $ = layui.$;
+        var table = layui.table;
+        var form = layui.form;
+        var laytpl = layui.laytpl;
+        var layer = layui.layer;
+
+        form.render();
+
+
+        table.render({
+            elem: '#demoTable',
+            toolbar: 'default'
+
+            , url: '../../record/getMatchList'
+            , height: 'full-200'
+            , page: true
+            , cols: [[
+                {type: 'radio', fixed: true},
+                {field: 'id', title: 'ID', width: 100},
+                {field: 'username', title: '姓名', width: 200},
+                {field: 'year', title: '参加年份', width: 100},
+                {field: 'event', title: '参加赛项', width: 100},
+                {field: 'group', title: '组别', width: 100},
+                {field: 'level', title: '赛级'},
+                {field: 'result', title: '比赛成绩'},
+                {field: 'award', title: '奖项'},
+                {field: 'remark', title: '备注'}
+            ]],
+        });
+
+        form.on('submit(table-search)', function (data) {
+            var field = data.field;
+            // 执行搜索重载
+            table.reload('demoTable', {
+                page: {
+                    curr: 1
+                },
+                where: field
+            });
+            layer.msg('搜索成功');
+            return false;
+        });
+        var hash = window.location.hash;
+        var id = null;
+        var index = hash.indexOf('?');
+
+        if (index !== -1) {
+            $('.layui-col-md4').hide();
+            var params = hash.substring(index + 1);
+            var arr = params.split('=');
+            if (arr[0] === 'id') {
+                id = arr[1];
+                table.reload('demoTable', {
+                    page: {
+                        curr: 1
+                    },
+                    where: {
+                        id: id
+                    }
+                });
+            }
+        }
+        table.on('toolbar(demoTable)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    if  (id === null) {
+                        layer.msg('请先选中学生,请在学生列表中选择');
+                        return;
+                    }
+                    layer.open({
+                        type: 2,
+                        title: '添加',
+                        content: '../../static/iframe/editMatch.html?sid='+id,
+                        area: ['80%', '80%'],
+                        maxmin: true,
+                        end: function () {
+                            table.reload('demoTable');
+                        }
+                    })
+                    //table.reload('demoTable');
+                    break;
+                case 'delete':
+                    if (checkStatus.data.length === 0) {
+                        layer.msg('请先选中');
+                        return;
+                    }
+                    layer.confirm('真的删除行么', function (index) {
+                        //向服务端发送删除指令
+                        $.ajax({
+                            url: '../../admin/deleteMatch/',
+                            type: 'DELETE',
+                            data: {"id": checkStatus.data[0].id},
+                            success: function (res) {
+                                if (res.code === 0) {
+                                    layer.msg('删除成功');
+                                    table.reload('demoTable');
+                                } else {
+                                    layer.msg('删除失败');
+                                }
+                            }
+                        });
+                        layer.close(index);
+                    });
+                    break;
+                case 'update':
+                    //判断是否先选中
+                    if (checkStatus.data.length === 0) {
+                        layer.msg('请先选中学生');
+                        return;
+                    }
+                    layer.open({
+                        type: 2,
+                        title: '编辑',
+                        content: '../../static/iframe/editMatch.html?data=' + encodeURI(JSON.stringify(checkStatus.data[0])),
+                        area: ['80%', '80%'],
+                        maxmin: true,
+                        end: function () {
+                            table.reload('demoTable');
+                        }
+
+                    })
+                    // table.reload('demoTable');
+                    break;
+            }
+        });
+
+
+    });
+</script>

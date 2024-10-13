@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../layui/css/layui.css" rel="stylesheet">
+</head>
+<body>
+<div style="padding: 15px" class="body">
+    <script id="TPL" type="text/html">
+        {{- d.page }}
+    </script>
+</div>
+<script src="../layui/layui.js"></script>
+<script>
+    //读取参数加载页面
+    layui.use('laytpl', function () {
+        var $ = layui.$;
+        var element = layui.element;
+        var laytpl = layui.laytpl;
+        var TPL = document.getElementById('TPL');
+        hash = window.location.hash;
+        var pageName = 'index';
+        var data;
+        if (hash) {
+            pageName = hash.substring(1);
+            //区分出?后面的参数(如果有)
+            var index = pageName.indexOf('?');
+            if (index !== -1) {
+                pageName = pageName.substring(0, index);
+                data = hash.substring(index + 2);
+            }
+        }
+
+        $.ajax({
+            url: '../page/' + pageName + '.html'+(data?'?'+data:''),
+            type: 'GET',
+            success: function (res) {
+                var getTpl = TPL.innerHTML;
+                laytpl(getTpl).render({"page":res}, function (html) {
+                    $('.body').html(html);
+                    layui.element.render('breadcrumb');
+                });
+            }, error: function () {
+                $.ajax({
+                    url: '../page/error/404.html',
+                    type: 'GET',
+                    success: function (data) {
+                        laytpl(getTpl).render({"page": data}, function (html) {
+                            document.getElementById('TPL').innerHTML = html;
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

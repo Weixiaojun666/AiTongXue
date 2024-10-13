@@ -1,0 +1,20 @@
+<div style="padding: 50px;">
+    <h1 style="text-align: center;">积分排行榜</h1>
+    <table class="layui-hide layui-table" id="ID-table-poins"></table>
+
+</div>
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+        table.render({
+            elem: '#ID-table-poins'
+            , url: '../api/getRankPoints'
+            , cols: [[
+                {field: 'id', title: 'ID', width: 80, fixed: 'left'}
+                , {field: 'username', title: '用户名', width: 120}
+                , {field: 'score', title: '积分', width: 80}
+            ]]
+
+        });
+    });
+</script>
