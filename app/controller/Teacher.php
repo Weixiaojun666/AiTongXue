@@ -7,7 +7,40 @@ use think\facade\Db;
 
 class Teacher
 {
+
+    //重写getInfo
+
     public function getInfo()
+    {
+        $user = checkLogin();
+        if ($user['type'] != 2) {
+            return returnJson(1, '无权限');
+        }
+        //检查当前时间是否有生效的课程
+        $data = Db::table('tb_course')->where('start_time', '<=', date('H:i:s', time()))
+            ->where('end_time', '>=', date('H:i:s', time()))
+           ->where('week', date('w', time()))
+            ->where('effective_time', '<=', date('Y-m-d', time()))
+            ->where('expire_time', '>=', date('Y-m-d', time()))
+            ->where('uid', $user['uid'])
+            ->find();
+        $student0 = [];
+        $student = [];
+        if ($data) {
+            $student = Db::table('tb_course_student')->join('tb_user_student', 'tb_course_student.sid=tb_user_student.id')->where('tb_course_student.cid', $data['id'])->select();
+        }
+
+        $data = [
+            'course' => $data,
+            'user' => $user,
+           'student' => $student
+        ];
+        return returnJson(0, 'success', $data);
+
+
+
+    }
+    public function getInfo0()
     {
         $user = checkLogin();
 //        if ($user['type'] != 1) {

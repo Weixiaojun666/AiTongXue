@@ -118,7 +118,7 @@ class Admin
             ->leftJoin('tb_course_student cs', 'tb_course.id = cs.cid')
             ->Join('tb_class c', 'tb_course.cid = c.id')
             ->group('tb_course.id')
-            ->field('tb_course.id,tb_course.title,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expiration_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
+            ->field('tb_course.id,tb_course.title,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expire_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
 
         $count = $data->count();
         $data = $data->page($page, $limit)
@@ -387,7 +387,7 @@ class Admin
         $start_time = $data['start_time'];
         $end_time = $data['end_time'];
         $effective_time = $data['effective_time'];
-        $expiration_time = $data['expiration_time'];
+        $expire_time = $data['expire_time'];
 
 //        preg_match('/(\d+)时(\d+)分/', $start_time, $matches);
 //        $start_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
@@ -403,7 +403,7 @@ class Admin
             'start_time' => $start_time,
             'end_time' => $end_time,
             'effective_time' => $effective_time,
-            'expiration_time' => $expiration_time,
+            'expire_time' => $expire_time,
             'week' => $week,
         ];
 

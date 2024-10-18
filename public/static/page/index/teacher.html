@@ -59,10 +59,20 @@
     </div>
 </div>
 
-</div>
+<script id="barDemo0" type="text/html">
+    <div class="layui-clear-space">
+        <a class="layui-btn layui-btn-xs" lay-event="sign">签到</a>
+    </div>
+</script>
 <script id="barDemo" type="text/html">
     <div class="layui-clear-space">
-        <a class="layui-btn layui-btn-xs" lay-event="remove">移除</a>
+        <div class="layui-form">
+            <input type="radio" name="AAA" value="1" title="未签到" >
+            <input type="radio" name="AAA" value="2" title="差">
+            <input type="radio" name="AAA" value="3" title="中">
+            <input type="radio" name="AAA" value="4" title="好">
+        </div>
+
     </div>
 </script>
 <script>
@@ -76,23 +86,7 @@
         var rate = layui.rate;
         var laytpl = layui.laytpl;
 
-        //获取课程列表
-        $.ajax({
-            url: '../Teacher/getSubjectList',
-            type: 'GET',
-            success: function (data) {
-                if (data.code === 0) {
-                    var html = '';
-                    for (var i = 0; i < data.data.length; i++) {
-                        html += '<option value="' + data.data[i].id + '">' + data.data[i].name + '</option>';
-                    }
-                    $('select[name=sid]').append(html);
-                    form.render('select');
-                } else {
-                    layer.msg(data.msg, {icon: 2});
-                }
-            }
-        });
+
 
 
         function UpdateInfo() {
@@ -110,6 +104,46 @@
                             $('button[lay-filter=demo_start]').text('修改课程信息');
                             form.render('select');
                             state = '当前正在上课: ' + data.data.course.title;
+
+
+
+                            table.render({
+                                elem: '#demoTable'
+                                , data: data.data.student
+                                , height: 'full-600'
+                                , lineStyle: 'height: 64px;'
+                                , cols: [[{field: 'id', title: 'ID'},
+                                    {field: 'username', title: '学生名'},
+
+                                    {
+                                        field: 'score', title: '课堂表现', edit: true, width: 200, templet: function (d) {
+                                            return '<div id="Score' + d.id + '"></div>'
+                                        }
+                                    },
+                                    {field: 'remark', title: '备注'},
+                                    {fixed: 'right', title: '操作', toolbar: '#barDemo'},
+                                ]],
+                                done: function (res, curr, count) {
+                                    var data = res.data;//返回的json中data数据
+                                    for (var item in data) {
+                                        rate.render({
+                                            elem: '#Score' + data[item].id + ''
+                                            , length: 5
+                                            , value: data[item].score
+                                            , half: true
+                                            , text: false
+                                            , readonly: true
+                                            , choose: function (value) {
+                                                submitScore(data[item].id, 1, value)
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+
+
+
+
 
                         }
                         data.data.state = state;
@@ -140,39 +174,7 @@
                         $('select[name=star]').html(html);
                         form.render('select');
 
-                        table.render({
-                            elem: '#demoTable'
-                            , data: data.data
-                            , height: 'full-600'
-                            , lineStyle: 'height: 64px;'
-                            , cols: [[{field: 'id', title: 'ID'},
-                                {field: 'username', title: '学生名'},
 
-                                {
-                                    field: 'score', title: '课堂表现', edit: true, width: 200, templet: function (d) {
-                                        return '<div id="Score' + d.id + '"></div>'
-                                    }
-                                },
-                                {field: 'remark', title: '备注'},
-                                {fixed: 'right', title: '操作', toolbar: '#barDemo'},
-                            ]],
-                            done: function (res, curr, count) {
-                                var data = res.data;//返回的json中data数据
-                                for (var item in data) {
-                                    rate.render({
-                                        elem: '#Score' + data[item].id + ''
-                                        , length: 5
-                                        , value: data[item].score
-                                        , half: true
-                                        , text: false
-                                        , readonly: true
-                                        , choose: function (value) {
-                                            submitScore(data[item].id, 1, value)
-                                        }
-                                    });
-                                }
-                            }
-                        });
 
 
                     } else {
@@ -233,7 +235,7 @@
             });
             return false;
         });
-        update()
+        //update()
         UpdateInfo();
         //每五秒自动刷新
         // setInterval(update, 5000);
