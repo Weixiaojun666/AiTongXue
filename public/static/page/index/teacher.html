@@ -4,7 +4,7 @@
         <div class="layui-row layui-col-space8">
             <div class="layui-col-xs6">
                 <blockquote class="layui-elem-quote layui-text">
-                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师</h3>
+                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师 </h3>
                 </blockquote>
             </div>
             <div class="layui-col-xs6">
@@ -18,17 +18,25 @@
 
 
     <div class="layui-row layui-col-space8">
-
+        <div class="layui-col-xs6">
             <div class="layui-card layui-panel">
                 <div class="layui-card-header">
-                    开始上课
+                    课程信息
                 </div>
                 <div class="layui-card-body">
                     <form class="layui-form">
-                        <div class="layui-form-item">
-                            <label class="layui-form-label">课程标题</label>
+                        <div class="layui-form-item" hidden="hidden">
+                            <label class="layui-form-label">课程ID</label>
                             <div class="layui-input-block">
-                                <input autocomplete="off" class="layui-input" lay-verify="required" name="title"
+                                <input autocomplete="off" class="layui-input" name="id"
+                                       placeholder="请输入" type="text">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">课程内容</label>
+                            <div class="layui-input-block">
+                                <input autocomplete="off" class="layui-input" name="content"
                                        placeholder="请输入" type="text">
                             </div>
                         </div>
@@ -39,15 +47,53 @@
                                        placeholder="请输入" type="text">
                             </div>
                         </div>
+
                         <div class="layui-form-item">
                             <div class="layui-input-block">
-                                <button class="layui-btn" lay-filter="demo_start" lay-submit>保存</button>
+                                <button class="layui-btn" lay-filter="updateCourse" lay-submit>保存</button>
                                 <button class="layui-btn layui-btn-primary" type="reset">重置</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
+
+
+        </div>
+        <div class="layui-col-xs6">
+            <div class="layui-card layui-panel">
+                <div class="layui-card-header">
+                    课程信息
+                </div>
+                <div class="layui-card-body">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">课程标题</label>
+                        <div class="layui-input-block">
+                            <input autocomplete="off" class="layui-input layui-disabled" disabled lay-verify="required"
+                                   name="title"
+                                   placeholder="请输入" type="text">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">开始时间</label>
+                        <div class="layui-input-block">
+                            <input autocomplete="off" class="layui-input layui-disabled" disabled lay-verify="required"
+                                   name="start_time"
+                                   placeholder="请输入" type="text">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">结束时间</label>
+                        <div class="layui-input-block">
+                            <input autocomplete="off" class="layui-input layui-disabled" disabled lay-verify="required"
+                                   name="end_time"
+                                   placeholder="请输入" type="text">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 <div class="layui-card layui-panel">
@@ -55,25 +101,20 @@
         课堂学生列表
     </div>
     <div class="layui-card-body">
-        <table id="demoTable" lay-filter="demoTable"></table>
+        <table class="layui-hide" id="demoTable" lay-filter="demoTable"></table>
     </div>
 </div>
+<div>
+    <blockquote class="layui-elem-quote layui-text">
+        <h4><span class="layui-word-aux layui-font-green" id="test2"></span></h4>
+    </blockquote>
+</div>
 
-<script id="barDemo0" type="text/html">
-    <div class="layui-clear-space">
-        <a class="layui-btn layui-btn-xs" lay-event="sign">签到</a>
-    </div>
-</script>
-<script id="barDemo" type="text/html">
-    <div class="layui-clear-space">
-        <div class="layui-form">
-            <input type="radio" name="AAA" value="1" title="未签到" >
-            <input type="radio" name="AAA" value="2" title="差">
-            <input type="radio" name="AAA" value="3" title="中">
-            <input type="radio" name="AAA" value="4" title="好">
-        </div>
-
-    </div>
+<script id="TPL-dropdpwn-demo" type="text/html">
+    <button class="layui-btn layui-btn-primary dropdpwn-demo">
+        <span>{{-  d.state === 1 ? '<div class="layui-badge">表现差劲</div>' : d.state === 2 ? '<div class="layui-badge layui-bg-blue">表现良好</div>' : d.state === 3 ? '<div class="layui-badge layui-bg-green">表现优秀</div>' :'<div class="layui-badge layui-bg-orange">未签到</div>'}}</span>
+        <i class="layui-icon layui-icon-down layui-font-12"></i>
+    </button>
 </script>
 <script>
     layui.use(function () {
@@ -85,8 +126,7 @@
         var table = layui.table;
         var rate = layui.rate;
         var laytpl = layui.laytpl;
-
-
+        var dropdown = layui.dropdown;
 
 
         function UpdateInfo() {
@@ -97,14 +137,19 @@
                 success: function (data) {
                     if (data.code === 0) {
                         var state = '当前未上课';
+                        lay('#test2').html("当前未上课");
                         if (data.data.course !== null) {
+                            $('input[name=id]').val(data.data.course.id);
                             $('input[name=title]').val(data.data.course.title);
                             $('select[name=sid]').val(data.data.course.sid);
+                            $('input[name=content]').val(data.data.course.content);
+                            $('input[name=remark]').val(data.data.course.remark);
+                            $('input[name=start_time]').val(data.data.course.start_time);
+                            $('input[name=end_time]').val(data.data.course.end_time);
+
                             //如果有正在上课的信息 就将开始上课按钮改成 修改课程信息
-                            $('button[lay-filter=demo_start]').text('修改课程信息');
                             form.render('select');
                             state = '当前正在上课: ' + data.data.course.title;
-
 
 
                             table.render({
@@ -112,39 +157,76 @@
                                 , data: data.data.student
                                 , height: 'full-600'
                                 , lineStyle: 'height: 64px;'
-                                , cols: [[{field: 'id', title: 'ID'},
+                                , cols: [[
+                                    {field: 'id', title: 'ID'},
                                     {field: 'username', title: '学生名'},
-
-                                    {
-                                        field: 'score', title: '课堂表现', edit: true, width: 200, templet: function (d) {
-                                            return '<div id="Score' + d.id + '"></div>'
-                                        }
-                                    },
-                                    {field: 'remark', title: '备注'},
-                                    {fixed: 'right', title: '操作', toolbar: '#barDemo'},
+                                    {field: 'state', title: '课堂表现', templet: '#TPL-dropdpwn-demo'},
+                                    {field: 'remark', title: '备注', edit: 'text'},
                                 ]],
                                 done: function (res, curr, count) {
-                                    var data = res.data;//返回的json中data数据
-                                    for (var item in data) {
-                                        rate.render({
-                                            elem: '#Score' + data[item].id + ''
-                                            , length: 5
-                                            , value: data[item].score
-                                            , half: true
-                                            , text: false
-                                            , readonly: true
-                                            , choose: function (value) {
-                                                submitScore(data[item].id, 1, value)
-                                            }
-                                        });
-                                    }
+                                    var options = this;
+                                    table.getRowData = function (tableId, elem) {
+                                        var index = $(elem).closest('tr').data('index');
+                                        return table.cache[tableId][index] || {};
+                                    };
+
+                                    dropdown.render({
+                                        elem: '.dropdpwn-demo',
+                                        // trigger: 'hover',
+                                        // 此处的 data 值，可根据 done 返回的 res 遍历来赋值
+                                        data: [
+                                            {
+                                                title: '未签到',
+                                                id: 0
+                                            },
+                                            {
+                                                title: '表现差劲',
+                                                id: 1
+                                            }, {
+                                                title: '表现良好',
+                                                id: 2
+                                            }, {
+                                                title: '表现优秀',
+                                                id: 3
+                                            }],
+                                        click: function (obj) {
+                                            var data = table.getRowData(options.id, this.elem);
+                                            this.elem.find('span').html(obj.title);
+                                            data.state = obj.title;
+                                            submitStudentInfo(data.id, 'state', obj.id);
+                                            //刷新表格
+                                            UpdateInfo();
+                                        }
+
+                                    });
                                 }
                             });
-
-
-
-
-
+                            var countdown = util.countdown({
+                                date:  new Date().toLocaleDateString() + ' '+data.data.course.end_time, // 目标时间值
+                                now: new Date(), // 当前时间，一般为服务器时间，此处以本地时间为例
+                                ready: function(){ // 初始操作
+                                    clearTimeout(util.countdown.timer); // 清除旧定时器，防止多次渲染时重复执行。实际使用时不常用
+                                },
+                                clock: function(obj, inst){  // 计时中
+                                    //var str = [obj.d,'天',obj.h,'时',obj.m,'分',obj.s,'秒'].join(' ');
+                                    var str = [obj.h,'时',obj.m,'分',obj.s,'秒'].join(' ');
+                                    lay('#test2').html("距离下课还有："+str);
+                                    util.countdown.timer = inst.timer; // 记录当前定时器，以便在重复渲染时清除。实际使用时不常用
+                                },
+                                done: function(obj, inst){ // 计时完成
+                                    //layer.msg('Time is up');
+                                }
+                            });
+                            // 重置倒计时
+                            laydate.render({
+                                elem: '#test1',
+                                type: 'datetime',
+                                done: function(value){
+                                    countdown.reload({
+                                        date: value
+                                    });
+                                }
+                            });
                         }
                         data.data.state = state;
                         var getTpl = document.getElementById('TPL').innerHTML; // 获取模板字符
@@ -159,7 +241,6 @@
                 }
             });
         }
-
         function update() {
             //获取学生列表
             $.ajax({
@@ -173,8 +254,6 @@
                         }
                         $('select[name=star]').html(html);
                         form.render('select');
-
-
 
 
                     } else {
@@ -192,42 +271,21 @@
             var data = obj.data; //得到所在行所有键值
             var field = obj.field; //得到字段
             var id = data.id;
-
-            // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
-            submitScore(id, field, value)
+            submitStudentInfo(id, field, value)
         });
 
 
         // 提交事件
-        form.on('submit(demo_start)', function (data) {
+        form.on('submit(updateCourse)', function (data) {
             var field = data.field;
             $.ajax({
-                url: '../Teacher/startClass',
+                url: '../Teacher/updateCourse',
                 type: 'POST',
                 data: field,
                 success: function (data) {
                     if (data.code === 0) {
                         layer.msg(data.msg, {icon: 1});
                         UpdateInfo();
-                        // window.location.href = '/';
-                    } else {
-                        layer.msg(data.msg, {icon: 2});
-                    }
-                }
-            });
-            return false;
-        });
-        form.on('submit(demo_end)', function (data) {
-            var field = data.field;
-            $.ajax({
-                url: '../Teacher/endClass',
-                type: 'POST',
-                data: field,
-                success: function (data) {
-                    if (data.code === 0) {
-                        layer.msg('结束上课成功', {icon: 1});
-                        UpdateInfo();
-                        update();
                     } else {
                         layer.msg(data.msg, {icon: 2});
                     }
@@ -241,14 +299,14 @@
         // setInterval(update, 5000);
 
         //提交评分
-        function submitScore(id, type, value) {
+        function submitStudentInfo(id, key, value) {
             $.ajax({
-                url: '../Teacher/submitScore',
+                url: '../Teacher/submitStudentInfo',
                 type: 'POST',
-                data: {id: id, type: type, value: value},
+                data: {id: id, key: key, value: value},
                 success: function (data) {
                     if (data.code === 0) {
-                        layer.msg('评分成功', {icon: 1});
+                        layer.msg(data.msg, {icon: 1});
                     } else {
                         layer.msg(data.msg, {icon: 2});
                     }

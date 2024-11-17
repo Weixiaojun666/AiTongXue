@@ -19,6 +19,12 @@
     <div class="layui-btn-container">
     </div>
 </script>
+<script id="TPL-dropdpwn-demo" type="text/html">
+    <button class="layui-btn layui-btn-primary dropdpwn-demo">
+        <span>{{-  d.state === 1 ? '<div class="layui-badge">表现差劲</div>' : d.state === 2 ? '<div class="layui-badge layui-bg-blue">表现良好</div>' : d.state === 3 ? '<div class="layui-badge layui-bg-green">表现优秀</div>' :'<div class="layui-badge layui-bg-orange">未签到</div>'}}</span>
+        <i class="layui-icon layui-icon-down layui-font-12"></i>
+    </button>
+</script>
 <script src="../layui/layui.js"></script>
 <script>
     //JS 调用：
@@ -30,55 +36,61 @@
         var layer = layui.layer;
         var rate = layui.rate;
         var url = window.location.search;
+        var dropdown = layui.dropdown;
         var id = url.substring(url.indexOf('=') + 1);
 
-
+        function UpdateInfo() {
+            table.reload('demoTable', {
+                url: '../../record/getCourseStudentList?id=' + id
+            });
+        }
         table.render({
-            elem: '#demoTable',
-            toolbar: 'default',
-            url: '../../student/getCourse?id=' + id,
-            height: 'full-200',
-            lineStyle: 'height: 64px;',
-            page: false,
-            cols: [[{field: 'id', title: 'ID'},
-                {field: 'username', title: '学生名字'},
-                {field: 'name', title: '课程类型'},
-                {field: 'title', title: '课程标题'},
-                {field: 'start_time', title: '开始时间'},
-                {field: 'end_time', title: '结束时间'},
-                {field: 'sign_time', title: '签到时间'},
-                {
-                    field: 'score', title: '课堂表现', templet: function (d) {
-                        return '<div id="Score' + d.id + '"></div>'
-                    }
-                }, {
-                    field: 'points3', title: '课堂之星', templet: function (d) {
-                        return '<div id="dScore' + d.id + '"></div>'
-                    }
-                }
-            ]], done: function (res, curr, count) {
-                var data = res.data;
-                for (var item in data) {
-                    rate.render({
-                        elem: '#Score' + data[item].id + ''
-                        , length: 5
-                        , value: data[item].points1
-                        , half: true
-                        , text: false
-                        , readonly: true
-                    });
-                    rate.render({
-                        elem: '#dScore' + data[item].id + ''
-                        , theme: '#f30808'
-                        , length: 1
-                        , value: data[item].points4
-                        , half: true
-                        , text: false
-                        , readonly: true
-                    });
-                }
-            }
+            elem: '#demoTable'
+            , url: '../../record/getCourseStudentList?id=' + id
+            , height: 'full-200'
+            , cols: [[
+                {field: 'id', title: 'ID'},
+                {field: 'username', title: '学生名'},
+                {field: 'state', title: '课堂表现', templet: '#TPL-dropdpwn-demo'},
+                {field: 'remark', title: '备注', edit: 'text'},
+            ]],
+            done: function (res, curr, count) {
+                var options = this;
+                table.getRowData = function (tableId, elem) {
+                    var index = $(elem).closest('tr').data('index');
+                    return table.cache[tableId][index] || {};
+                };
 
+                dropdown.render({
+                    elem: '.dropdpwn-demo',
+                    // trigger: 'hover',
+                    // 此处的 data 值，可根据 done 返回的 res 遍历来赋值
+                    data: [
+                        {
+                            title: '未签到',
+                            id: 0
+                        },
+                        {
+                            title: '表现差劲',
+                            id: 1
+                        }, {
+                            title: '表现良好',
+                            id: 2
+                        }, {
+                            title: '表现优秀',
+                            id: 3
+                        }],
+                    click: function (obj) {
+                        var data = table.getRowData(options.id, this.elem);
+                        this.elem.find('span').html(obj.title);
+                        data.state = obj.title;
+                        submitStudentInfo(data.id, 'state', obj.id);
+                        //刷新表格
+                        UpdateInfo();
+                    }
+
+                });
+            }
         });
 
         //触发事件
@@ -113,6 +125,28 @@
             layer.msg('搜索成功');
             return false;
         });
+        table.on('edit(demoTable)', function (obj) {
+            var value = obj.value; //得到修改后的值
+            var data = obj.data; //得到所在行所有键值
+            var field = obj.field; //得到字段
+            var id = data.id;
+            submitStudentInfo(id, field, value)
+        });
+
+        function submitStudentInfo(id, key, value) {
+            $.ajax({
+                url: '../../../Teacher/submitStudentInfo',
+                type: 'POST',
+                data: {id: id, key: key, value: value},
+                success: function (data) {
+                    if (data.code === 0) {
+                        layer.msg(data.msg, {icon: 1});
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        }
     });
 </script>
 </body>

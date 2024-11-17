@@ -13,6 +13,9 @@ class Admin
             return (returnJson(1, '无权限'));
         }
         $data = Db::table('tb_user_student');
+        //查询出班级名
+        $data = $data->leftjoin('tb_class', 'tb_user_student.cid=tb_class.id')
+            ->field('tb_user_student.*,tb_class.title as class_name');
         if ($username) {
             $data = $data->where('username', 'like', '%' . $username . '%');
         }
@@ -113,10 +116,10 @@ class Admin
 //        }
 
         $data = Db::table('tb_course')->alias('tb_course')
-            ->Join('tb_subject s', 'tb_course.sid = s.id')
-            ->Join('tb_user u', 'tb_course.uid = u.id')
+            ->leftJoin('tb_subject s', 'tb_course.sid = s.id')
+            ->leftJoin('tb_user u', 'tb_course.uid = u.id')
             ->leftJoin('tb_course_student cs', 'tb_course.id = cs.cid')
-            ->Join('tb_class c', 'tb_course.cid = c.id')
+            ->leftJoin('tb_class c', 'tb_course.cid = c.id')
             ->group('tb_course.id')
             ->field('tb_course.id,tb_course.title,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expire_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
 
@@ -381,7 +384,7 @@ class Admin
         $title = $data['title'];
         $sid = $data['sid'];
         $uid = $data['uid'];
-        $cid = $data['cid'];
+//        $cid = $data['cid'];
         $week = $data['week'];
 
         $start_time = $data['start_time'];
@@ -399,7 +402,7 @@ class Admin
             'title' => $title,
             'sid' => $sid,
             'uid' => $uid,
-            'cid' => $cid,
+//            'cid' => $cid,
             'start_time' => $start_time,
             'end_time' => $end_time,
             'effective_time' => $effective_time,

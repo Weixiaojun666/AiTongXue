@@ -8,13 +8,40 @@ use think\facade\Db;
 class Teacher
 {
 
-    //重写getInfo
-
     public function getInfo()
     {
         $user = checkLogin();
         if ($user['type'] != 2) {
             return returnJson(1, '无权限');
+        }
+        $data = [
+            'course' => [],
+            'user' => $user,
+            'student' => []
+        ];
+        //先检查tb_record_course中有没有正在进行的课程
+        $result = Db::table('tb_record_course')->where('uid', $user['uid'])->where('state', 0)->find();
+        if ($result) {
+            $data['student'] = Db::table('tb_record_course_student')->where('tb_record_course_student.cid', $result['id'])
+                ->alias('a')
+                ->join('tb_user_student b', 'a.sid=b.id')
+                ->field('a.*,b.username')
+                ->select();
+            $data = Db::table('tb_course')->where('start_time', '<=', date('H:i:s', time()))
+                ->where('end_time', '>=', date('H:i:s', time()))
+                ->where('week', date('w', time()))
+                ->where('effective_time', '<=', date('Y-m-d', time()))
+                ->where('expire_time', '>=', date('Y-m-d', time()))
+                ->where(['uid'=> $user['uid'],'id'=>$result['cid']])
+                ->find();
+            if ($data == null) {
+                //课程已经结束
+                Db::table('tb_record_course')->where('id', $result['id'])->update(['state' => 1]);
+                return returnJson(0, 'success', $data);
+            }
+
+
+            return returnJson(0, 'success', $data);
         }
         //检查当前时间是否有生效的课程
         $data = Db::table('tb_course')->where('start_time', '<=', date('H:i:s', time()))
@@ -24,187 +51,28 @@ class Teacher
             ->where('expire_time', '>=', date('Y-m-d', time()))
             ->where('uid', $user['uid'])
             ->find();
-        $student0 = [];
-        $student = [];
+        //如果有课程 复制一份到tb_record_course 并复制学生信息到tb_record_course_student
         if ($data) {
-            $student = Db::table('tb_course_student')->join('tb_user_student', 'tb_course_student.sid=tb_user_student.id')->where('tb_course_student.cid', $data['id'])->select();
-        }
-
-        $data = [
-            'course' => $data,
-            'user' => $user,
-           'student' => $student
-        ];
-        return returnJson(0, 'success', $data);
-
-
-
-    }
-    public function getInfo0()
-    {
-        $user = checkLogin();
-//        if ($user['type'] != 1) {
-//            return returnJson(1, '无权限');
-//        }
-        //获取正在上课的信息
-//        $data = Db::table('tb_record_course')->where('uid', $user['uid'])->where('end_time', null)->find();
-//        if ($data) {
-//            $data['student'] = Db::table('tb_record_course_student')->where('cid', $data['id'])->select();
-//        }
-//        $data = [
-//            'course' => $data,
-//            'user' => $user
-//        ];
-
-        //获取正在上课的信息 判断当前时间是否有课
-        $data = Db::table('tb_course')->where('start_time', '<', date('H:i:s', time()))
-            ->where('end_time', '>', date('H:i:s', time()))->where('week', date('w', time()))
-            ->find();
-        $student0 = [];
-        $student = [];
-        if ($data) {
-            $student0 = Db::table('tb_course_student')->join('tb_user_student', 'tb_course_student.sid=tb_user_student.id')->where('tb_course_student.cid', $data['id'])->field("tb_user_student.id as value,username as title")->select()->toArray();
-        }
-
-        $data = [
-            'course' => $data,
-            'user' => $user,
-            'student0' => $student0
-        ];
-
-
-//        $data['user']['username'] = mb_substr($data['user']['username'], 0, 1, 'utf-8');
-        return returnJson(0, 'success', $data);
-
-    }
-
-    //开始上课
-    public function startClass()
-    {
-        $user = checkLogin();
-        if ($user['type'] != 1) {
-            exit(returnJson(1, '无权限'));
-        }
-        $data = Db::table('tb_record_course')->where('uid', $user['uid'])->where('end_time', null)->find();
-        if ($data) {
-            //更新上课状态
-            $data0 = input('post.');
-            $data0 = [
-                'uid' => $user['uid'],
-                'title' => $data0['title'],
-                'sid' => $data0['sid'],
-            ];
-            try {
-                Db::table("tb_record_course")->where("id", $data['id'])->update($data0);
-                return returnJson(0, '更新上课状态成功');
-            } catch (Exception $e) {
-                return returnJson(1, '更新上课状态失败', $e->getMessage());
+            $data0['cid'] = $data['id'];
+            $data0['uid'] = $user['uid'];
+            $data0['state'] = 0;
+            $data0['id'] = Db::table('tb_record_course')->insertGetId($data0);
+            $student = Db::table('tb_course_student')->where('cid', $data['id'])->select();
+            foreach ($student as $key => $value) {
+                $value['cid'] = $data0['id'];
+                $value['id'] = null;
+                Db::table('tb_record_course_student')->insert($value);
             }
-
-
+            $data['student'] = Db::table('tb_record_course_student')->where('tb_record_course_student.cid', $data['id'])
+                ->alias('a')
+                ->join('tb_user_student b', 'a.sid=b.id')
+                ->field('a.*,b.username')
+                ->select();
+            $data['course'] = Db::table('tb_course')->where('id', $data['cid'])->find();
+            return returnJson(0, 'success', $data);
         }
-        try {
-            $data = input('post.');
-            $data = [
-                'uid' => $user['uid'],
-                'title' => $data['title'],
-                'sid' => $data['sid'],
-                'start_time' => date('Y-m-d H:i:s', time())
-            ];
-            Db::table("tb_record_course")->insert($data);
-        } catch (Exception $e) {
-            return returnJson(1, '开始上课失败', $e->getMessage());
-        }
-        return returnJson(0, '开始上课成功');
+        return returnJson(0, 'success', $data);
     }
-
-    //结束上课
-    public function endClass()
-    {
-        $user = checkLogin();
-        if ($user['type'] != 2) {
-            return (returnJson(0, '无权限'));
-        }
-        $result = Db::table('tb_record_course')->where('uid', $user['uid'])->where('end_time', null)->find();
-        if (!$result) {
-            return returnJson(1, '未开始上课');
-        }
-        $data = input('post.');
-        $data = [
-            'uid' => $user['uid'],
-            'remark' => $data['remark'],
-            'star' => $data['star'],
-            'end_time' => date('Y-m-d H:i:s', time()),
-        ];
-        try {
-            Db::table("tb_record_course")->where('uid', $user['uid'])->where('end_time', null)->update($data);
-        } catch (Exception $e) {
-            return returnJson(1, '结束上课失败');
-        }
-        //计算学生积分
-        try {
-            $students = Db::table('tb_record_course_student')->where('cid', $result['id'])->select()->toArray();
-            foreach ($students as $student) {
-                $score = $student['score'] + 10;
-                $data = [
-                    'sid' => $student['sid'],
-                    'score' => $score,
-                    'reason' => '上课积分',
-                    'update_time' => date('Y-m-d H:i:s', time())
-                ];
-                Db::table('tb_record_score')->insert($data);
-                Db::table('tb_user_student')->where('id', $student['sid'])->setInc('score', $score);
-
-            }
-        } catch (Exception $e) {
-            return returnJson(1, '计算学生积分失败', $e->getMessage());
-        }
-
-        return returnJson(0, '结束上课成功');
-    }
-
-    //获取上课状态
-    public function getClassState()
-    {
-//        $user = checkLogin();
-//        if ($user['type'] != 1) {
-//            exit(returnJson(1, '无权限'));
-//        }
-//        $data = Db::table('tb_record_course')->where('uid', $user['uid'])->where('end_time', null)->find();
-//        if (!$data) {
-//            return returnJson(1, '未开始上课');
-//        }
-//        return returnJson(0, '上课中', $data);
-        //读取课程表 判断当前时间是否在上课时间内
-        $data = Db::table('tb_course')->where('start_time', '<', date('H:i:s', time()))
-            ->where('end_time', '>', date('H:i:s', time()))->where('week', date('w', time()))
-            ->find();
-        if ($data) {
-            return returnJson(0, '上课中', $data);
-        } else {
-            return returnJson(1, '未上课', $data);
-        }
-
-    }
-
-    public function getStudentList()
-    {
-        $user = checkLogin();
-//        if ($user['type'] != 1) {
-//            exit(returnJson(1, '无权限'));
-//        }
-        $data = Db::table('tb_record_course')->where('uid', $user['uid'])->where('end_time', null)->find();
-        if (!$data) {
-            return returnJson(1, '未开始上课');
-        }
-        $data = Db::table('tb_record_course_student')->where('cid', $data['id'])
-            ->alias('a')
-            ->join('tb_user_student b', 'a.sid=b.id')
-            ->field('a.*,b.username')
-            ->select();
-        return returnJson(0, 'success', $data, count($data));
-    }
-
     //获取课程列表
     public function getSubjectList()
     {
@@ -215,42 +83,45 @@ class Teacher
         $data = Db::table('tb_record_subject')->where("state", 1)->select();
         return returnJson(0, 'success', $data, count($data));
     }
-
-    //记录学生评分
-    public function submitScore()
+    public function updateCourse()
     {
         $user = checkLogin();
-        if ($user['type'] != 1) {
-            exit(returnJson(1, '无权限'));
+        if ($user['type'] != 2) {
+            return returnJson(1, '无权限');
         }
         $data = input('post.');
-        //判断cid是否属于这个教师
-//        $result = Db::table('tb_record_course')->where(['uid'=> $user['uid'],'cid'=>$data['id']])->find();
-//        if (!$result) {
-//            return returnJson(1, '未找到课程');
-//        }
-//        if ($data['type'] == 'points1') {
-//            $data0 = [
-//                'points1' => $data['value'],
-//            ];
-//        }
-//        if ($data['type'] == 'points2') {
-//            $data0 = [
-//                'points2' => $data['value'],
-//            ];
-//        }
-//        if ($data['type'] == 'points3') {
-//            $data0 = [
-//                'points3' => $data['value'],
-//            ];
-//        }
+        $data['uid'] = $user['uid'];
         try {
-            Db::table("tb_record_courseRE_student")->where(["id" => $data['id']])->update(['score' => $data['score']]);
+            Db::table("tb_record_course")->where(["id"=>$data["id"],"uid"=>$user['uid']])->update($data);
         } catch (Exception $e) {
-            return returnJson(1, '评分失败', $e->getMessage());
+            return returnJson(1, '更新课程失败', $e->getMessage());
         }
-        return returnJson(0, '评分成功');
+        return returnJson(0, '更新课程信息成功');
     }
 
 
+    public function submitStudentInfo()
+    {
+        $user = checkLogin();
+        if ($user['type'] != 2) {
+            exit(returnJson(1, '无权限'));
+        }
+        $data = input('post.');
+
+        $result = Db::table('tb_record_course_student')->where(['id'=>$data['id']])->find();
+        if (!$result) {
+            return returnJson(1, '未找到学生');
+        }
+        //判断cid是否属于这个教师
+        $result = Db::table('tb_record_course')->where(['uid'=> $user['uid'],'id'=>$result['cid']])->find();
+        if (!$result) {
+            return returnJson(1, '未找到课程');
+        }
+        try {
+            Db::table("tb_record_course_student")->where(["id" => $data['id']])->update([$data["key"] => $data['value']]);
+        } catch (Exception $e) {
+            return returnJson(1, '更新状态失败', $e->getMessage());
+        }
+        return returnJson(0, '更新状态成功');
+    }
 }

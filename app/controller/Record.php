@@ -51,18 +51,24 @@ class Record
     public function getCourseList($page = 1, $limit = 10, $username = null)
     {
         $user = checkLogin();
+        $id = 0;
         if ($user['type'] == 1) {
             $id = $user['uid'];
             $username = null;
         }
         $data = Db::table('tb_record_course')
 //            ->leftjoin('tb_user_student','tb_record_course.sid=tb_user_student.id')
-            ->leftjoin('tb_user', 'tb_record_course.tid=tb_user.id')
+            ->leftjoin('tb_user', 'tb_record_course.uid=tb_user.id')
             ->leftjoin('tb_subject', 'tb_record_course.sid=tb_subject.id')
-            ->field('tb_record_course.*,tb_user.username as username,tb_subject.name as subject');
+            ->leftjoin('tb_course', 'tb_record_course.cid=tb_course.id')
+            ->leftJoin('tb_record_course_student', 'tb_record_course.id=tb_record_course_student.cid')
+            ->field('tb_course.title as c_title,tb_record_course.title,tb_record_course.remark,tb_user.username as username,tb_subject.name as subject,count(tb_record_course_student.id) as student_count');
 //        if ($sname) {
 //            $data = $data->where('tb_user_student.username', 'like', '%' . $sname . '%');
 //        }
+        if ($id!=0){
+            $data = $data->where('tb_record_course.uid', $id);
+        }
         if ($username) {
             $data = $data->where('tb_user.username', 'like', '%' . $username . '%');
         }
@@ -72,6 +78,27 @@ class Record
         return (returnJson(0, 'success', $data, $count));
 
 
+    }
+
+    //获取课程中学生列表
+    public function getCourseStudentList($page = 1, $limit = 10, $cid = null)
+    {
+        $user = checkLogin();
+        $id = 0;
+        if ($user['type'] == 1) {
+            $id = $user['uid'];
+            $username = null;
+        }
+        $data = Db::table('tb_record_course_student')
+            ->leftjoin('tb_user_student', 'tb_record_course_student.sid=tb_user_student.id')
+            ->field('tb_user_student.username as username,tb_user_student.id as sid,tb_record_course_student.id as id');
+        if ($cid) {
+            $data = $data->where('tb_record_course_student.cid', $cid);
+        }
+        $count = $data->count();
+        $data = $data->page($page, $limit)->select();
+
+        return (returnJson(0, 'success', $data, $count));
     }
 
     /**

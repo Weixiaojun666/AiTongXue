@@ -56,17 +56,17 @@
             , page: true
             , cols: [[
                 {type: 'radio', fixed: true},
-                {field: 'id', title: 'ID', width: 75},
+                {field: 'id', title: 'ID', width: 75,hide:true},
                 {field: 'username', title: '姓名'},
-                {field: 'score', title: '积分'},
-                {field: 'rclass', title: '剩余课次'},
-                {field: 'atime', title: '入学时间'},
-                {field: 'rtime', title: '续费时间'},
+                {field: 'score', title: '积分',width: 50},
+                {field: 'rclass', title: '剩余课次',width: 100},
+                {field: 'atime', title: '入学时间',width: 150},
+                {field: 'rtime', title: '续费时间',width: 150},
 
-                {field: 'classname', title: '所在班级'},
+                {field: 'class_name', title: '所在班级'},
 
                 {
-                    field: 'state', title: '状态', templet: function (d) {
+                    field: 'state', title: '状态',hide:true, templet: function (d) {
                         if (d.state === 1) {
                             return '<span class="layui-badge layui-bg-green">正常</span>';
                         }
@@ -75,8 +75,8 @@
                         }
                     }
                 },
-                {fixed: 'right', title: '查看记录', toolbar: '#barDemo', width: 250, minWidth: 150},
-                {field: 'remark', title: '备注', width: 100, minWidth: 50},
+                {field: 'right', title: '查看记录', toolbar: '#barDemo', width: 250, minWidth: 150},
+                {field: 'remark', title: '备注', width: 100, minWidth: 50,hide:true},
             ]],
         });
 

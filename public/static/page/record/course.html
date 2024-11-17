@@ -16,7 +16,6 @@
 <script id="barDemo" type="text/html">
     <div class="layui-btn-container">
         <button class="layui-btn layui-btn-sm" lay-event="check">查看</button>
-        <button class="layui-btn layui-btn-sm" lay-event="delete">删除</button>
     </div>
 </script>
 <script id="demo-toolbar-setRowChecked" type="text/html">
@@ -51,14 +50,13 @@
             page: true,
             cols: [[
                 {type: 'radio', fixed: true},
-                {field: 'id', title: 'ID', width: 80},
+                {field: 'id', title: 'ID', width: 80,hide:true},
                 {field: 'username', title: '老师'},
-                {field: 'subject', title: '课程类型'},
-                {field: 'title', title: '课程标题', width: 360},
+                {field: 'c_title', title: '课程标题', width: 360},
+                {field: 'title', title: '内容标题', width: 360},
                 {field: 'remark', title: '备注'},
-                {field: 'time', title: '上课时间'},
                 {field: 'student_count', title: '学生人数'},
-                {fixed: 'right', title: '操作', toolbar: '#barDemo'}
+                {field: 'right', title: '操作', toolbar: '#barDemo'}
             ]],
 
         });
@@ -88,7 +86,7 @@
                     layer.open({
                         type: 2,
                         title: '查看',
-                        content: '../../static/iframe/check.html?id=' + obj.data.id,
+                        content: '../../static/iframe/checkStudent.html?id=' + obj.data.id,
                         area: ['80%', '80%'],
                         maxmin: true
 
@@ -108,6 +106,70 @@
             });
             layer.msg('搜索成功');
             return false;
+        });
+        table.on('toolbar(demoTable)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'add':
+                    if  (obj.data.id === null) {
+                        layer.msg('暂时不允许直接添加课程');
+                        return;
+                    }
+                    layer.open({
+                        type: 2,
+                        title: '添加',
+                        content: '../../static/iframe/editCourseRecord.html?id='+obj.data.id,
+                        area: ['80%', '80%'],
+                        maxmin: true,
+                        end: function () {
+                            table.reload('demoTable');
+                        }
+                    })
+                    //table.reload('demoTable');
+                    break;
+                case 'delete':
+                    if (checkStatus.data.length === 0) {
+                        layer.msg('请先选中');
+                        return;
+                    }
+                    layer.confirm('真的删除行么', function (index) {
+                        //向服务端发送删除指令
+                        $.ajax({
+                            url: '../../record/deleteCourseRecord/',
+                            type: 'DELETE',
+                            data: {"id": checkStatus.data[0].id},
+                            success: function (res) {
+                                if (res.code === 0) {
+                                    layer.msg('删除成功');
+                                    table.reload('demoTable');
+                                } else {
+                                    layer.msg('删除失败');
+                                }
+                            }
+                        });
+                        layer.close(index);
+                    });
+                    break;
+                case 'update':
+                    //判断是否先选中
+                    if (checkStatus.data.length === 0) {
+                        layer.msg('请先选中课程');
+                        return;
+                    }
+                    layer.open({
+                        type: 2,
+                        title: '编辑',
+                        content: '../../static/iframe/editCourseRecord.html?data=' + encodeURI(JSON.stringify(checkStatus.data[0])),
+                        area: ['80%', '80%'],
+                        maxmin: true,
+                        end: function () {
+                            table.reload('demoTable');
+                        }
+
+                    })
+                    // table.reload('demoTable');
+                    break;
+            }
         });
     });
 </script>

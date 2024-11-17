@@ -43,7 +43,7 @@
             page: true,
             cols: [[
                 {type: 'radio', title: '', fixed: true},
-                {field: 'id', title: 'ID'},
+                {field: 'id', title: 'ID',hide:true},
                 {field: 'username', title: '老师'},
                 {field: 'name', title: '课程类型'},
                 {field: 'title', title: '课程标题'},
@@ -83,9 +83,9 @@
                         }
                     }
                 },
-                {field: 'class_name', title: '班级'},
+                // {field: 'class_name', title: '班级'},
                 {field: 'student_count', title: '学生人数'},
-                {fixed: 'right', title: '操作', toolbar: '#barDemo'}
+                {field: 'right', title: '操作', toolbar: '#barDemo'}
             ]],
 
         });

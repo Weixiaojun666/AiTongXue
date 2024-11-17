@@ -19,7 +19,9 @@ class Api
         $user = Db::table('tb_user_student')->where(['username' => $data['username'], 'state' => 1])->find();
         if (!$user) {
             $user = Db::table('tb_user')->where(['username' => $data['username'], 'state' => 1])->find();
-            $type = $user['type'];
+            if ($user) {
+                $type = $user['type'];
+            }
         }
         if (!$user) {
             return (returnJson(1, msg: "用户不存在"));
