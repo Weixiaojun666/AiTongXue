@@ -63,8 +63,7 @@ class Api
 
     public function getCaptcha()
     {
-        header('Content-Type: image/png');
-        return Captcha::create();
+        return response(Captcha::create(), 200, ['Content-Type' => 'image/png']);
     }
 
 
