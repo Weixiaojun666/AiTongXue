@@ -6,7 +6,7 @@
 
 return [
     // 默认缓存驱动
-    'default' => 'file',
+    'default' => 'redis',
 
     // 缓存连接方式配置
     'stores' => [
@@ -23,6 +23,14 @@ return [
             'tag_prefix' => 'tag:',
             // 序列化机制 例如 ['serialize', 'unserialize']
             'serialize' => [],
+        ],
+        'redis' => [
+            // 驱动方式
+            'type' => 'redis',
+            // 服务器地址
+            'host' => '127.0.0.1',
+            // 端口
+            'port' => 6379,
         ],
         // 更多的缓存连接
     ],
