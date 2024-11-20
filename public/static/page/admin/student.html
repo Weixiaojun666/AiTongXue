@@ -56,15 +56,13 @@
             , page: true
             , cols: [[
                 {type: 'radio', fixed: true},
-                {field: 'id', title: 'ID', width: 75,hide:true},
-                {field: 'username', title: '姓名'},
-                {field: 'score', title: '积分',width: 50},
+                {field: 'id', title: 'ID',hide:true},
+                {field: 'username', title: '姓名', width: 150,},
+                {field: 'score', title: '积分',width: 75},
                 {field: 'rclass', title: '剩余课次',width: 100},
                 {field: 'atime', title: '入学时间',width: 150},
                 {field: 'rtime', title: '续费时间',width: 150},
-
                 {field: 'class_name', title: '所在班级'},
-
                 {
                     field: 'state', title: '状态',hide:true, templet: function (d) {
                         if (d.state === 1) {

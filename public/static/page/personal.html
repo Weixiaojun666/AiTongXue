@@ -1,10 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<div>个人中心仍在装修中...</div>
-</body>
-</html>
+<div style="padding: 15px;">
+    <div class="layui-row layui-col-space8">
+        <div class="layui-col-xs6">
+            <div class="layui-card layui-panel">
+                <div class="layui-card-header">
+                    修改密码
+                </div>
+                <div class="layui-card-body">
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">原密码</label>
+                            <div class="layui-input-block">
+                                <input autocomplete="off" class="layui-input" name="oldPassword"
+                                       lay-reqtext="请填写原密码" type="password" lay-affix="eye" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新密码</label>
+                            <div class="layui-input-block">
+                                <input autocomplete="off" class="layui-input" name="newPassword"
+                                       lay-reqtext="请填写新密码" type="password" lay-verify="required">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认密码</label>
+                            <div class="layui-input-block">
+                                <input autocomplete="off" class="layui-input" name="password"
+                                       lay-reqtext="请再填写一遍" type="password" lay-verify="required">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-filter="updateCourse" lay-submit>保存</button>
+                                <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+</div>
+</div>
+<script src="./js/crypto-js/crypto-js.js"></script>
+<script>
+    layui.use(function(){
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+
+        // 修改密码
+        form.on('submit(updateCourse)', function(data){
+            var flag = true;
+            var field = data.field;
+            if(field.newPassword !== field.password){
+                layer.msg('两次密码不一致');
+                flag = false;
+            }
+            if(field.newPassword.length < 6){
+                layer.msg('密码长度不能小于6位');
+                flag = false;
+            }
+            if (field.newPassword === field.oldPassword){
+                layer.msg('新密码不能和原密码相同');
+                flag = false;
+            }
+            //判断密码复杂性
+            var reg = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/;
+            if(!reg.test(field.newPassword)){
+                layer.msg('密码必须包含数字和字母');
+                flag = false;
+            }
+            field.oldPassword =  CryptoJS.SHA256(field.oldPassword).toString();
+            field.newPassword =  CryptoJS.SHA256(field.newPassword).toString();
+            delete field.password;
+
+            if (flag){
+            $.ajax({
+                url: '/api/changePassword',
+                type: 'post',
+                data: field,
+                success: function(res){
+                    if(res.code === 0){
+                        layer.msg('修改成功');
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            });
+            }
+            //清空
+            $('input[name="oldPassword"]').val('');
+            $('input[name="newPassword"]').val('');
+            $('input[name="password"]').val('');
+            return false;
+        });
+    });
+</script>

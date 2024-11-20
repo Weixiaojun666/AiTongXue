@@ -47,10 +47,10 @@
                 {field: 'username', title: '老师'},
                 {field: 'name', title: '课程类型'},
                 {field: 'title', title: '课程标题'},
-                {field: 'effective_time', title: '生效时间'},
-                {field: 'expire_time', title: '失效时间'},
-                {field: 'start_time', title: '上课开始时间'},
-                {field: 'end_time', title: '上课结束时间'},
+                {field: 'effective_time', title: '生效时间', hide:true},
+                {field: 'expire_time', title: '失效时间', hide:true},
+                {field: 'start_time', title: '上课时间'},
+                {field: 'end_time', title: '下课时间'},
                 {field: 'two_week', title: '两周一次?', templet: function (d) {
                         if (d.two_week === 1) {
                             return '是';
