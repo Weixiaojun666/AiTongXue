@@ -1,19 +1,19 @@
 <div style="padding: 15px;">
 
-    <script id="TPL" type="text/html">
-        <div class="layui-row layui-col-space8">
-            <div class="layui-col-xs6">
-                <blockquote class="layui-elem-quote layui-text">
-                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师 </h3>
-                </blockquote>
-            </div>
-            <div class="layui-col-xs6">
-                <blockquote class="layui-elem-quote layui-text">
-                    <h3 style="align-content: center">{{ d.state }}</h3>
-                </blockquote>
-            </div>
-        </div>
-    </script>
+<!--    <script id="TPL" type="text/html">-->
+<!--        <div class="layui-row layui-col-space8">-->
+<!--            <div class="layui-col-xs6">-->
+<!--                <blockquote class="layui-elem-quote layui-text">-->
+<!--                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师 </h3>-->
+<!--                </blockquote>-->
+<!--            </div>-->
+<!--            <div class="layui-col-xs6">-->
+<!--                <blockquote class="layui-elem-quote layui-text">-->
+<!--                    <h3 style="align-content: center">{{ d.state }}</h3>-->
+<!--                </blockquote>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </script>-->
     <div id="view"></div>
 
 
@@ -57,8 +57,6 @@
                     </form>
                 </div>
             </div>
-
-
         </div>
         <div class="layui-col-xs6">
             <div class="layui-card layui-panel">
@@ -138,7 +136,7 @@
                     if (data.code === 0) {
                         var state = '当前未上课';
                         lay('#test2').html("当前未上课");
-                        if (data.data.course !== null) {
+                        if (data.data !== null) {
                             $('input[name=id]').val(data.data.course.id);
                             $('input[name=title]').val(data.data.course.title);
                             $('select[name=sid]').val(data.data.course.sid);
@@ -150,7 +148,6 @@
                             //如果有正在上课的信息 就将开始上课按钮改成 修改课程信息
                             form.render('select');
                             state = '当前正在上课: ' + data.data.course.title;
-
 
                             table.render({
                                 elem: '#demoTable'
@@ -227,14 +224,15 @@
                                     });
                                 }
                             });
+                            data.data.state = state;
                         }
-                        data.data.state = state;
-                        var getTpl = document.getElementById('TPL').innerHTML; // 获取模板字符
-                        var elemView = document.getElementById('view'); // 视图对象
-                        // 渲染并输出结果
-                        laytpl(getTpl).render(data.data, function (str) {
-                            elemView.innerHTML = str;
-                        });
+
+                        // var getTpl = document.getElementById('TPL').innerHTML; // 获取模板字符
+                        // var elemView = document.getElementById('view'); // 视图对象
+                        // // 渲染并输出结果
+                        // laytpl(getTpl).render(data.data, function (str) {
+                        //     elemView.innerHTML = str;
+                        // });
                     } else {
                         layer.msg(data.msg, {icon: 2});
                     }

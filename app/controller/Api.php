@@ -12,9 +12,9 @@ class Api
     {
         //TYPE 0未登录 1学生 2教师 3管理员
         $data = input('post.');
-        if (!captcha_check($data['captcha'])) {
-            exit( returnJson(1, '验证码错误'));
-        }
+//        if (!captcha_check($data['captcha'])) {
+//            return( returnJson(1, '验证码错误'));
+//        }
         $type = 1;
         $user = Db::table('tb_user_student')->where(['username' => $data['username'], 'state' => 1])->find();
         if (!$user) {
@@ -44,6 +44,24 @@ class Api
         return (returnJson(msg: "登出成功"));
     }
 
+    //修改密码
+    public function changePassword()
+    {
+        $user = checkLogin();
+        $data = input('post.');
+        $oldPassword = $data['oldPassword'];
+        $newPassword = $data['newPassword'];
+        $result = Db::table('tb_user')->where('id', $user['uid'])->find();
+        if ($result['password'] != hash("sha256", $oldPassword)) {
+            return (returnJson(1, msg: "原密码错误"));
+        }
+        $res = Db::table('tb_user')->where('id', $user['uid'])->update(['password' => hash("sha256", $newPassword)]);
+        if ($res) {
+            return (returnJson(msg: "修改成功"));
+        } else {
+            return (returnJson(1, msg: "修改失败"));
+        }
+    }
     public function index()
     {
         return (returnJson(msg: "成功"));
