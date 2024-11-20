@@ -21,7 +21,10 @@
 </script>
 <script id="TPL-dropdpwn-demo" type="text/html">
     <button class="layui-btn layui-btn-primary dropdpwn-demo">
-        <span>{{-  d.state === 1 ? '<div class="layui-badge">表现差劲</div>' : d.state === 2 ? '<div class="layui-badge layui-bg-blue">表现良好</div>' : d.state === 3 ? '<div class="layui-badge layui-bg-green">表现优秀</div>' :'<div class="layui-badge layui-bg-orange">未签到</div>'}}</span>
+        <span>{{-  d.state === 1 ? '<div class="layui-badge">表现差劲</div>' : d.state === 2 ? '<div
+                class="layui-badge layui-bg-blue">表现良好</div>' : d.state === 3 ? '<div
+                class="layui-badge layui-bg-green">表现优秀</div>' :'<div
+                class="layui-badge layui-bg-orange">未签到</div>'}}</span>
         <i class="layui-icon layui-icon-down layui-font-12"></i>
     </button>
 </script>
@@ -44,6 +47,7 @@
                 url: '../../record/getCourseStudentList?id=' + id
             });
         }
+
         table.render({
             elem: '#demoTable'
             , url: '../../record/getCourseStudentList?id=' + id

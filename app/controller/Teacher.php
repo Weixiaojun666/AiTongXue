@@ -32,7 +32,7 @@ class Teacher
                 ->where('week', date('w', time()))
                 ->where('effective_time', '<=', date('Y-m-d', time()))
                 ->where('expire_time', '>=', date('Y-m-d', time()))
-                ->where(['uid'=> $user['uid'],'id'=>$result['cid']])
+                ->where(['uid' => $user['uid'], 'id' => $result['cid']])
                 ->find();
             if ($data == null) {
                 //课程已经结束
@@ -46,7 +46,7 @@ class Teacher
         //检查当前时间是否有生效的课程
         $data = Db::table('tb_course')->where('start_time', '<=', date('H:i:s', time()))
             ->where('end_time', '>=', date('H:i:s', time()))
-           ->where('week', date('w', time()))
+            ->where('week', date('w', time()))
             ->where('effective_time', '<=', date('Y-m-d', time()))
             ->where('expire_time', '>=', date('Y-m-d', time()))
             ->where('uid', $user['uid'])
@@ -73,6 +73,7 @@ class Teacher
         }
         return returnJson(0, 'success', $data);
     }
+
     //获取课程列表
     public function getSubjectList()
     {
@@ -83,6 +84,7 @@ class Teacher
         $data = Db::table('tb_record_subject')->where("state", 1)->select();
         return returnJson(0, 'success', $data, count($data));
     }
+
     public function updateCourse()
     {
         $user = checkLogin();
@@ -92,7 +94,7 @@ class Teacher
         $data = input('post.');
         $data['uid'] = $user['uid'];
         try {
-            Db::table("tb_record_course")->where(["id"=>$data["id"],"uid"=>$user['uid']])->update($data);
+            Db::table("tb_record_course")->where(["id" => $data["id"], "uid" => $user['uid']])->update($data);
         } catch (Exception $e) {
             return returnJson(1, '更新课程失败', $e->getMessage());
         }
@@ -108,12 +110,12 @@ class Teacher
         }
         $data = input('post.');
 
-        $result = Db::table('tb_record_course_student')->where(['id'=>$data['id']])->find();
+        $result = Db::table('tb_record_course_student')->where(['id' => $data['id']])->find();
         if (!$result) {
             return returnJson(1, '未找到学生');
         }
         //判断cid是否属于这个教师
-        $result = Db::table('tb_record_course')->where(['uid'=> $user['uid'],'id'=>$result['cid']])->find();
+        $result = Db::table('tb_record_course')->where(['uid' => $user['uid'], 'id' => $result['cid']])->find();
         if (!$result) {
             return returnJson(1, '未找到课程');
         }

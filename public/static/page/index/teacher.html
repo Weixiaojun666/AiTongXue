@@ -1,19 +1,19 @@
 <div style="padding: 15px;">
 
-<!--    <script id="TPL" type="text/html">-->
-<!--        <div class="layui-row layui-col-space8">-->
-<!--            <div class="layui-col-xs6">-->
-<!--                <blockquote class="layui-elem-quote layui-text">-->
-<!--                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师 </h3>-->
-<!--                </blockquote>-->
-<!--            </div>-->
-<!--            <div class="layui-col-xs6">-->
-<!--                <blockquote class="layui-elem-quote layui-text">-->
-<!--                    <h3 style="align-content: center">{{ d.state }}</h3>-->
-<!--                </blockquote>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </script>-->
+    <!--    <script id="TPL" type="text/html">-->
+    <!--        <div class="layui-row layui-col-space8">-->
+    <!--            <div class="layui-col-xs6">-->
+    <!--                <blockquote class="layui-elem-quote layui-text">-->
+    <!--                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师 </h3>-->
+    <!--                </blockquote>-->
+    <!--            </div>-->
+    <!--            <div class="layui-col-xs6">-->
+    <!--                <blockquote class="layui-elem-quote layui-text">-->
+    <!--                    <h3 style="align-content: center">{{ d.state }}</h3>-->
+    <!--                </blockquote>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </script>-->
     <div id="view"></div>
 
 
@@ -110,7 +110,10 @@
 
 <script id="TPL-dropdpwn-demo" type="text/html">
     <button class="layui-btn layui-btn-primary dropdpwn-demo">
-        <span>{{-  d.state === 1 ? '<div class="layui-badge">表现差劲</div>' : d.state === 2 ? '<div class="layui-badge layui-bg-blue">表现良好</div>' : d.state === 3 ? '<div class="layui-badge layui-bg-green">表现优秀</div>' :'<div class="layui-badge layui-bg-orange">未签到</div>'}}</span>
+        <span>{{-  d.state === 1 ? '<div class="layui-badge">表现差劲</div>' : d.state === 2 ? '<div
+                class="layui-badge layui-bg-blue">表现良好</div>' : d.state === 3 ? '<div
+                class="layui-badge layui-bg-green">表现优秀</div>' :'<div
+                class="layui-badge layui-bg-orange">未签到</div>'}}</span>
         <i class="layui-icon layui-icon-down layui-font-12"></i>
     </button>
 </script>
@@ -199,18 +202,18 @@
                                 }
                             });
                             var countdown = util.countdown({
-                                date:  new Date().toLocaleDateString() + ' '+data.data.course.end_time, // 目标时间值
+                                date: new Date().toLocaleDateString() + ' ' + data.data.course.end_time, // 目标时间值
                                 now: new Date(), // 当前时间，一般为服务器时间，此处以本地时间为例
-                                ready: function(){ // 初始操作
+                                ready: function () { // 初始操作
                                     clearTimeout(util.countdown.timer); // 清除旧定时器，防止多次渲染时重复执行。实际使用时不常用
                                 },
-                                clock: function(obj, inst){  // 计时中
+                                clock: function (obj, inst) {  // 计时中
                                     //var str = [obj.d,'天',obj.h,'时',obj.m,'分',obj.s,'秒'].join(' ');
-                                    var str = [obj.h,'时',obj.m,'分',obj.s,'秒'].join(' ');
-                                    lay('#test2').html("距离下课还有："+str);
+                                    var str = [obj.h, '时', obj.m, '分', obj.s, '秒'].join(' ');
+                                    lay('#test2').html("距离下课还有：" + str);
                                     util.countdown.timer = inst.timer; // 记录当前定时器，以便在重复渲染时清除。实际使用时不常用
                                 },
-                                done: function(obj, inst){ // 计时完成
+                                done: function (obj, inst) { // 计时完成
                                     //layer.msg('Time is up');
                                 }
                             });
@@ -218,7 +221,7 @@
                             laydate.render({
                                 elem: '#test1',
                                 type: 'datetime',
-                                done: function(value){
+                                done: function (value) {
                                     countdown.reload({
                                         date: value
                                     });
@@ -239,6 +242,7 @@
                 }
             });
         }
+
         function update() {
             //获取学生列表
             $.ajax({

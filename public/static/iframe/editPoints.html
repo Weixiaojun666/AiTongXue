@@ -31,7 +31,8 @@
         <div class="layui-form-item">
             <label class="layui-form-label">变动积分</label>
             <div class="layui-input-inline">
-                <input autocomplete="off" class="layui-input" lay-verify="required|number" name="score" placeholder="请输入"
+                <input autocomplete="off" class="layui-input" lay-verify="required|number" name="score"
+                       placeholder="请输入"
                        type="text">
             </div>
         </div>
@@ -96,7 +97,7 @@
                 form.val('form', params);
             }
             if (key === 'sid' && currentId !== null) {
-               //隐藏 username div
+                //隐藏 username div
                 $('input[name="sid"]').val(currentId);
                 $('#username').parent().hide();
             }

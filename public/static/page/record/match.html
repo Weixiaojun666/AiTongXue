@@ -45,7 +45,7 @@
             , page: true
             , cols: [[
                 {type: 'radio', fixed: true},
-                {field: 'id', title: 'ID', width: 100,hide:true},
+                {field: 'id', title: 'ID', width: 100, hide: true},
                 {field: 'username', title: '姓名', width: 200},
                 {field: 'year', title: '参加年份', width: 100},
                 {field: 'event', title: '参加赛项', width: 100},
@@ -94,14 +94,14 @@
             var checkStatus = table.checkStatus(obj.config.id);
             switch (obj.event) {
                 case 'add':
-                    if  (id === null) {
+                    if (id === null) {
                         layer.msg('请先选中学生,请在学生列表中选择');
                         return;
                     }
                     layer.open({
                         type: 2,
                         title: '添加',
-                        content: '../../static/iframe/editMatch.html?sid='+id,
+                        content: '../../static/iframe/editMatch.html?sid=' + id,
                         area: ['80%', '80%'],
                         maxmin: true,
                         end: function () {

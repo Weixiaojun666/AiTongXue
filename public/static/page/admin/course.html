@@ -43,21 +43,23 @@
             page: true,
             cols: [[
                 {type: 'radio', title: '', fixed: true},
-                {field: 'id', title: 'ID',hide:true},
+                {field: 'id', title: 'ID', hide: true},
                 {field: 'username', title: '老师'},
                 {field: 'name', title: '课程类型'},
                 {field: 'title', title: '课程标题'},
-                {field: 'effective_time', title: '生效时间', hide:true},
-                {field: 'expire_time', title: '失效时间', hide:true},
+                {field: 'effective_time', title: '生效时间', hide: true},
+                {field: 'expire_time', title: '失效时间', hide: true},
                 {field: 'start_time', title: '上课时间'},
                 {field: 'end_time', title: '下课时间'},
-                {field: 'two_week', title: '两周一次?', templet: function (d) {
+                {
+                    field: 'two_week', title: '两周一次?', templet: function (d) {
                         if (d.two_week === 1) {
                             return '是';
                         } else {
                             return '否';
                         }
-                    }},
+                    }
+                },
                 {
                     field: 'week', title: '星期', templet: function (d) {
                         if (d.week === 1) {

@@ -6,7 +6,7 @@
     <link href="../layui/css/layui.css" rel="stylesheet">
 </head>
 <body>
-<div style="padding: 15px" class="body">
+<div class="body" style="padding: 15px">
     <script id="TPL" type="text/html">
         {{- d.page }}
     </script>
@@ -33,11 +33,11 @@
         }
 
         $.ajax({
-            url: '../page/' + pageName + '.html'+(data?'?'+data:''),
+            url: '../page/' + pageName + '.html' + (data ? '?' + data : ''),
             type: 'GET',
             success: function (res) {
                 var getTpl = TPL.innerHTML;
-                laytpl(getTpl).render({"page":res}, function (html) {
+                laytpl(getTpl).render({"page": res}, function (html) {
                     $('.body').html(html);
                     layui.element.render('breadcrumb');
                 });

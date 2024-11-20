@@ -62,6 +62,7 @@ class Api
             return (returnJson(1, msg: "修改失败"));
         }
     }
+
     public function index()
     {
         return (returnJson(msg: "成功"));

@@ -51,7 +51,7 @@ class Admin
         if ($user['type'] != 3) {
             return (returnJson(1, '无权限'));
         }
-        $data = Db::table('tb_user')->where(['type'=> 2,"state"=>1]);
+        $data = Db::table('tb_user')->where(['type' => 2, "state" => 1]);
 //        if ($username) {
 //            $data = $data->where('username', 'like', '%' . $username . '%');
 //        }
@@ -146,6 +146,7 @@ class Admin
         $data = $data->select()->toArray();
         return (returnJson(0, 'success', $data, $count));
     }
+
     public function getClassList0()
     {
         $user = checkLogin();
@@ -338,10 +339,10 @@ class Admin
             $data = Db::table('tb_user_student')->where('id', $id)->save($data);
         } else {
             $data = [
-            'username' => $data['username'],
-            'password' => "49dc52e6bf2abe5ef6e2bb5b0f1ee2d765b922ae6cc8b95d39dc06c21c848f8c",
-            //'cid' => $cid,
-        ];
+                'username' => $data['username'],
+                'password' => "49dc52e6bf2abe5ef6e2bb5b0f1ee2d765b922ae6cc8b95d39dc06c21c848f8c",
+                //'cid' => $cid,
+            ];
             $data = Db::table('tb_user_student')->insert($data);
         }
         return (returnJson(0, 'success'));

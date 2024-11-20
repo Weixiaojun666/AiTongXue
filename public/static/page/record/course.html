@@ -40,7 +40,6 @@
         }
 
 
-
         table.render({
             elem: '#demoTable',
             toolbar: 'default',
@@ -50,7 +49,7 @@
             page: true,
             cols: [[
                 {type: 'radio', fixed: true},
-                {field: 'id', title: 'ID', width: 80,hide:true},
+                {field: 'id', title: 'ID', width: 80, hide: true},
                 {field: 'username', title: '老师'},
                 {field: 'c_title', title: '课程标题', width: 360},
                 {field: 'title', title: '内容标题', width: 360},
@@ -111,14 +110,14 @@
             var checkStatus = table.checkStatus(obj.config.id);
             switch (obj.event) {
                 case 'add':
-                    if  (obj.data.id === null) {
+                    if (obj.data.id === null) {
                         layer.msg('暂时不允许直接添加课程');
                         return;
                     }
                     layer.open({
                         type: 2,
                         title: '添加',
-                        content: '../../static/iframe/editCourseRecord.html?id='+obj.data.id,
+                        content: '../../static/iframe/editCourseRecord.html?id=' + obj.data.id,
                         area: ['80%', '80%'],
                         maxmin: true,
                         end: function () {
