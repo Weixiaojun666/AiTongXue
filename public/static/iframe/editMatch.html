@@ -37,8 +37,19 @@
         <div class="layui-form-item">
             <label class="layui-form-label">参加赛项</label>
             <div class="layui-input-inline">
-                <input autocomplete="off" class="layui-input" lay-verify="required" name="event" placeholder="请输入"
-                       type="text">
+<!--                <input autocomplete="off" class="layui-input" lay-verify="required" name="event" placeholder="请输入"-->
+<!--                       type="text">-->
+                <select name="event" lay-filter="event">
+                    <option value=""></option>
+                    <option value="蓝桥杯">蓝桥杯</option>
+                    <option value="全国青少年信息素养大赛">全国青少年信息素养大赛</option>
+                    <option value="学生信息素养提升实践活动">学生信息素养提升实践活动</option>
+                    <option value="ICode国际青少年编程竞赛">ICode国际青少年编程竞赛</option>
+                    <option value="河南省机器人大赛">河南省机器人大赛</option>
+                    <option value="信息学奥赛CSP-J">信息学奥赛CSP-J</option>
+                    <option value="信息学奥赛CSP-S">信息学奥赛CSP-S</option>
+                    <option value="等级考试证书">等级考试证书</option>
+                </select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -52,14 +63,25 @@
                     <option value="市级">市级</option>
                     <option value="省级">省级</option>
                     <option value="国家级">国家级</option>
+                    <option value="初赛">初赛</option>
+                    <option value="复赛">复赛</option>
+                    <option value="一级">一级</option>
+                    <option value="二级">二级</option>
+                    <option value="三级">三级</option>
                 </select>
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">组别</label>
             <div class="layui-input-inline">
-                <input autocomplete="off" class="layui-input" lay-verify="required" name="group" placeholder="请输入"
-                       type="text">
+<!--                <input autocomplete="off" class="layui-input" lay-verify="required" name="group" placeholder="请输入"-->
+<!--                       type="text">-->
+                <select name="group" lay-filter="group">
+                    <option value=""></option>
+                    <option value="C++">C++</option>
+                    <option value="Python">Python</option>
+                    <option value="图形化">图形化</option>
+                </select>
             </div>
         </div>
         <div class="layui-form-item">
@@ -80,6 +102,19 @@
                     <option value="二等奖">二等奖</option>
                     <option value="三等奖">三等奖</option>
                     <option value="优秀奖">优秀奖</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">组织单位</label>
+            <div class="layui-input-inline">
+<!--                <input autocomplete="off" class="layui-input" name="unit" placeholder="请输入"-->
+<!--                       type="text">-->
+                <select name="unit" lay-filter="unit">
+                    <option value=""></option>
+                    <option value="中国电子学会">中国电子学会</option>
+                    <option value="CCF">CCF</option>
+                    <option value="中国国际科技促进会">中国国际科技促进会</option>
                 </select>
             </div>
         </div>
@@ -129,7 +164,12 @@
                 var award = params.award;
                 $('select[name="award"]').val(award);
                 form.render('select');
-
+                var unit = params.unit;
+                $('select[name="unit"]').val(unit);
+                form.render('select');
+                var group = params.group;
+                $('select[name="group"]').val(group);
+                form.render('select');
             }
             if (key === 'sid' && currentId !== null) {
                 //隐藏 username div
