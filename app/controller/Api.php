@@ -67,6 +67,14 @@ class Api
     {
         return (returnJson(msg: "成功"));
     }
+    public function getScore($username)
+    {
+        $user = Db::table('tb_user_student')->where('username', $username)->find();
+        if (!$user) {
+            return (returnJson(1, '用户不存在'));
+        }
+        return (returnJson(0, 'success', $user['score']));
+    }
 
     public function getUser()
     {

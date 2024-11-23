@@ -331,19 +331,11 @@ class Admin
             return (returnJson(1, '无权限'));
         }
         $data = input('post.');
-
-        // $password = $data['password'];
-        //$cid = $data['cid'];
         $id = $data['id'];
         if ($id) {
             $data = Db::table('tb_user_student')->where('id', $id)->save($data);
         } else {
-            $data = [
-                'username' => $data['username'],
-                'password' => "49dc52e6bf2abe5ef6e2bb5b0f1ee2d765b922ae6cc8b95d39dc06c21c848f8c",
-                //'cid' => $cid,
-            ];
-            $data = Db::table('tb_user_student')->insert($data);
+             Db::table('tb_user_student')->insert(['username' => $data['username'],]);
         }
         return (returnJson(0, 'success'));
     }
