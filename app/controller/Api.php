@@ -75,6 +75,31 @@ class Api
         }
         return (returnJson(0, 'success', $user['score']));
     }
+    //允许学生自己加分 调用接口10000次加一分
+    public function addScore($username)
+    {
+        $user = Db::table('tb_user_student')->where('username', $username)->find();
+        if (!$user) {
+            return (returnJson(1, '用户不存在'));
+        }
+        //调用接口10000次加一分
+        //使用缓存记录调用次数
+        $count = cache('addScore_' . $username);
+//        if ($count >= 10000) {
+//            return (returnJson(1, '调用次数已达上限'));
+//        }
+        cache('addScore_' . $username, $count + 1, 86400);
+
+        if ($count >= 10000) {
+            $res = Db::table('tb_user_student')->where('username', $username)->setInc('score');
+            if (!$res) {
+                return (returnJson(1, '加分失败'));
+            }
+            return (returnJson(0, '加分成功'));
+        }
+            return (returnJson(0, 'success', '调用次数' . $count));
+
+    }
 
     public function getUser()
     {
