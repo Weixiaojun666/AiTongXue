@@ -82,7 +82,7 @@ class Api
         if (!$user) {
             return (returnJson(1, '用户不存在'));
         }
-        //调用接口10000次加一分
+        //调用接口10000次加10分
         //使用缓存记录调用次数
         $count = cache('addScore_' . $username);
 //        if ($count >= 10000) {
@@ -91,7 +91,8 @@ class Api
         cache('addScore_' . $username, $count + 1, 86400);
 
         if ($count >= 10000) {
-            $res = Db::table('tb_user_student')->where('username', $username)->setInc('score');
+            //加10分
+            $res = Db::table('tb_user_student')->where('username', $username)->setInc('score', 10);
             if (!$res) {
                 return (returnJson(1, '加分失败'));
             }
