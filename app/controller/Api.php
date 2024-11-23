@@ -85,9 +85,9 @@ class Api
         //调用接口10000次加10分
         //使用缓存记录调用次数
         $count = cache('addScore_' . $username);
-//        if ($count >= 10000) {
-//            return (returnJson(1, '调用次数已达上限'));
-//        }
+        if ($count >= 10000) {
+            return (returnJson(1, '已成功加10分'));
+        }
         cache('addScore_' . $username, $count + 1, 86400);
 
         if ($count >= 10000) {
