@@ -12,9 +12,10 @@ class Api
     {
         //TYPE 0未登录 1学生 2教师 3管理员
         $data = input('post.');
-//        if (!captcha_check($data['captcha'])) {
-//            return( returnJson(1, '验证码错误'));
-//        }
+        if (env('CAPTCHA_ON')&&!captcha_check($data['captcha'])) {
+            return( returnJson(1, '验证码错误'));
+        }
+
         $type = 1;
         $user = Db::table('tb_user_student')->where(['username' => $data['username'], 'state' => 1])->find();
         if (!$user) {
