@@ -13,11 +13,11 @@
     </div>
 </form>
 <table id="demoTable" lay-filter="demoTable"></table>
-<script id="barDemo" type="text/html">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-sm" lay-event="check">查看</button>
-    </div>
-</script>
+<!--<script id="barDemo" type="text/html">-->
+<!--    <div class="layui-btn-container">-->
+<!--        <button class="layui-btn layui-btn-sm" lay-event="check">查看</button>-->
+<!--    </div>-->
+<!--</script>-->
 <script id="demo-toolbar-setRowChecked" type="text/html">
     <div class="layui-btn-container">
     </div>
@@ -73,27 +73,27 @@
                 },
 
                 {field: 'remark', title: '备注'},
-                {field: 'right', title: '操作', toolbar: '#barDemo'}
+                // {field: 'right', title: '操作', toolbar: '#barDemo'}
             ]],
         });
 
         //触发事件
-        table.on('tool(demoTable)', function (obj) {
-            var checkStatus = table.checkStatus(obj.config.id);
-            switch (obj.event) {
-                case 'check':
-                    layer.open({
-                        type: 2,
-                        title: '查看',
-                        content: '../static/iframe/checkStudent.html?id=' + obj.data.id,
-                        area: ['80%', '80%'],
-                        maxmin: true
-
-                    })
-                    // window.location.href = './#admin/check?id=' + obj.data.id;
-                    break;
-            }
-        });
+        // table.on('tool(demoTable)', function (obj) {
+        //     var checkStatus = table.checkStatus(obj.config.id);
+        //     switch (obj.event) {
+        //         case 'check':
+        //             layer.open({
+        //                 type: 2,
+        //                 title: '查看',
+        //                 content: '../static/iframe/checkStudent.html?id=' + obj.data.id,
+        //                 area: ['80%', '80%'],
+        //                 maxmin: true
+        //
+        //             })
+        //             // window.location.href = './#admin/check?id=' + obj.data.id;
+        //             break;
+        //     }
+        // });
         table.on('toolbar(demoTable)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id);
             switch (obj.event) {
