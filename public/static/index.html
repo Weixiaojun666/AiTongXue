@@ -112,7 +112,7 @@
                     userInfo = data.data;
                     indexType = data.data.type;
                     if (indexType === 1) {
-                        $.getJSON('./data/menu/student.json', function (data) {
+                        $.getJSON('../static/data/menu/student.json', function (data) {
                             laytpl($('#menu-tpl').html()).render({"menu": getMenuHtml(data)}, function (html) {
                                 $('.layui-side-scroll').html(html);
                                 element.render('nav');
@@ -121,7 +121,7 @@
                         if (pageName === 'index') pageName = 'index/student';
                     }
                     if (indexType === 2) {
-                        $.getJSON('./data/menu/teacher.json', function (data) {
+                        $.getJSON('../static/data/menu/teacher.json', function (data) {
                             laytpl($('#menu-tpl').html()).render({"menu": getMenuHtml(data)}, function (html) {
                                 $('.layui-side-scroll').html(html);
                                 element.render('nav');
@@ -131,7 +131,7 @@
 
                     }
                     if (indexType === 3) {
-                        $.getJSON('./data/menu/admin.json', function (data) {
+                        $.getJSON('../static/data/menu/admin.json', function (data) {
                             laytpl($('#menu-tpl').html()).render({"menu": getMenuHtml(data)}, function (html) {
                                 $('.layui-side-scroll').html(html);
                                 element.render('nav');
@@ -141,7 +141,7 @@
                     }
 
                     $.ajax({
-                        url: './page/' + pageName + '.html',
+                        url: '../static/page/' + pageName + '.html',
                         type: 'GET',
                         success: function (data) {
                             laytpl(TPl).render({"page": data}, function (html) {
@@ -152,7 +152,7 @@
                         },
                         error: function () {
                             $.ajax({
-                                url: './error/404.html',
+                                url: '../static/error/404.html',
                                 type: 'GET',
                                 success: function (data) {
                                     laytpl(TPl).render({"page": data}, function (html) {
