@@ -374,7 +374,7 @@ class Admin
         }
         $data = input('post.');
         $id = $data['id'];
-        $title = $data['title'];
+       // $title = $data['title'];
         $sid = $data['sid'];
         $uid = $data['uid'];
 //        $cid = $data['cid'];
@@ -392,7 +392,6 @@ class Admin
 //        $end_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
 
         $data = [
-            'title' => $title,
             'sid' => $sid,
             'uid' => $uid,
 //            'cid' => $cid,
