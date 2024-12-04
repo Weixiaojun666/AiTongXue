@@ -351,11 +351,11 @@ class Admin
         $id = $data['id'];
         $title = $data['title'];
         $sid = $data['sid'];
-        $uid = $data['uid'];
+//        $uid = $data['uid'];
         $data = [
             'title' => $title,
             'sid' => $sid,
-            'uid' => $uid,
+//            'uid' => $uid,
         ];
         if ($id) {
             $data = Db::table('tb_class')->where('id', $id)->update($data);
