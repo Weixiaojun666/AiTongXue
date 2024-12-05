@@ -15,52 +15,52 @@
                 <input autocomplete="off" class="layui-input layui-disabled" disabled name="id" type="text">
             </div>
         </div>
-<!--        <div class="layui-form-item">-->
-<!--            <label class="layui-form-label">课程名</label>-->
-<!--            <div class="layui-input-inline">-->
-<!--                <input autocomplete="off" class="layui-input" lay-verify="required" name="title" placeholder="请输入"-->
-<!--                       type="text">-->
-<!--            </div>-->
-<!--        </div>-->
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">生效时间</label>
-                <div class="layui-input-inline">
-                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-1" name="effective_time"
-                           placeholder="yyyy-MM-dd"
-                           type="text">
-                </div>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">失效时间</label>
-                <div class="layui-input-inline">
-                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-2" name="expire_time"
-                           placeholder="yyyy-MM-dd"
-                           type="text">
-                </div>
-            </div>
-        </div>
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label">课程名</label>-->
+        <!--            <div class="layui-input-inline">-->
+        <!--                <input autocomplete="off" class="layui-input" lay-verify="required" name="title" placeholder="请输入"-->
+        <!--                       type="text">-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--        <div class="layui-form-item">-->
+        <!--            <div class="layui-inline">-->
+        <!--                <label class="layui-form-label">生效时间</label>-->
+        <!--                <div class="layui-input-inline">-->
+        <!--                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-1" name="effective_time"-->
+        <!--                           placeholder="yyyy-MM-dd"-->
+        <!--                           type="text">-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <!--        <div class="layui-form-item">-->
+        <!--            <div class="layui-inline">-->
+        <!--                <label class="layui-form-label">失效时间</label>-->
+        <!--                <div class="layui-input-inline">-->
+        <!--                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-2" name="expire_time"-->
+        <!--                           placeholder="yyyy-MM-dd"-->
+        <!--                           type="text">-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
 
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">开始时间</label>
+                <label class="layui-form-label">上课时间</label>
                 <div class="layui-input-inline">
                     <input autocomplete="off" class="layui-input" id="ID-laydate-format-3" name="start_time"
                            type="text">
                 </div>
             </div>
         </div>
-        <div class="layui-form-item">
-            <div class="layui-inline">
-                <label class="layui-form-label">结束时间</label>
-                <div class="layui-input-inline">
-                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-4" name="end_time"
-                           type="text">
-                </div>
-            </div>
-        </div>
+        <!--        <div class="layui-form-item">-->
+        <!--            <div class="layui-inline">-->
+        <!--                <label class="layui-form-label">结束时间</label>-->
+        <!--                <div class="layui-input-inline">-->
+        <!--                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-4" name="end_time"-->
+        <!--                           type="text">-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
         <div class="layui-form-item">
             <label class="layui-form-label">请选择老师</label>
             <div class="layui-input-block">
@@ -69,24 +69,14 @@
                 </select>
             </div>
         </div>
-
         <div class="layui-form-item">
-            <label class="layui-form-label">请选择类型</label>
+            <label class="layui-form-label">请选择班级</label>
             <div class="layui-input-block">
-                <select autocomplete="off" lay-append-to="body" lay-filter="select-demo" name="sid">
-                    <option value="">请选择类型</option>
+                <select autocomplete="off" lay-append-to="body" lay-filter="select-demo" name="cid">
+                    <option value="">请选择班级</option>
                 </select>
             </div>
         </div>
-
-        <!--        <div class="layui-form-item">-->
-        <!--            <label class="layui-form-label">请选择班级</label>-->
-        <!--            <div class="layui-input-block">-->
-        <!--                <select autocomplete="off" lay-append-to="body" lay-filter="select-demo" name="cid">-->
-        <!--                    <option value="">请选择班级</option>-->
-        <!--                </select>-->
-        <!--            </div>-->
-        <!--        </div>-->
         <div class="layui-form-item">
             <label class="layui-form-label">请选择星期</label>
             <div class="layui-input-block">
@@ -128,10 +118,20 @@
         var laydate = layui.laydate;
 
         var search = window.location.search;
+        var cid = '';
+        var uid = '';
         if (search !== '') {
             var query = decodeURI(search);
             var currentId = query.substring(query.indexOf('=') + 1);
             params = JSON.parse(currentId);
+            //如果存在cid 则禁止编辑cid
+            if (params.cid) {
+                cid = params.cid;
+                $('select[name="cid"]').attr('disabled', 'disabled');
+            }
+            if (params.uid) {
+                uid = params.uid;
+            }
             form.val('form', params);
             form.render();
         }
@@ -152,19 +152,24 @@
             type: 'time',
         });
 
-        //获取教师列表
+        //获取老师列表
         $.ajax({
             url: '../../admin/getTeacherList',
             type: 'GET',
             success: function (res) {
                 if (res.code === 0) {
                     var data = res.data;
-                    var html = '';
-                    for (var i = 0; i < data.length; i++) {
-                        html += '<option value="' + data[i].id + '">' + data[i].username + '</option>';
+                    var select = $('select[name="uid"]');
+                    for (var item in data) {
+                        if (uid === data[item].id) {
+                            select.append('<option value="' + data[item].id + '" selected>' + data[item].username + '</option>');
+                        } else {
+                            select.append('<option value="' + data[item].id + '">' + data[item].username + '</option>');
+                        }
                     }
-                    $('select[name="uid"]').html(html);
                     form.render('select');
+                } else {
+                    layer.msg('获取老师列表失败');
                 }
             }
         });
@@ -185,21 +190,24 @@
             }
         });
         //获取班级
-        // $.ajax({
-        //     url: '../../admin/getClassList0',
-        //     type: 'GET',
-        //     success: function (res) {
-        //         if (res.code === 0) {
-        //             var data = res.data;
-        //             var html = '';
-        //             for (var i = 0; i < data.length; i++) {
-        //                 html += '<option value="' + data[i].id + '">' + data[i].title + '</option>';
-        //             }
-        //             $('select[name="cid"]').html(html);
-        //             form.render('select');
-        //         }
-        //     }
-        // });
+        $.ajax({
+            url: '../../admin/getClassList0',
+            type: 'GET',
+            success: function (res) {
+                if (res.code === 0) {
+                    var data = res.data;
+                    var select = $('select[name="cid"]');
+                    for (var item in data) {
+                        if (cid === data[item].id) {
+                            select.append('<option value="' + data[item].id + '" selected>' + data[item].title + '</option>');
+                        } else {
+                            select.append('<option value="' + data[item].id + '">' + data[item].title + '</option>');
+                        }
+                    }
+                    form.render('select');
+                }
+            }
+        });
 
 
         //监听提交

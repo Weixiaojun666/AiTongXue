@@ -12,8 +12,8 @@ class Api
     {
         //TYPE 0未登录 1学生 2教师 3管理员
         $data = input('post.');
-        if (env('CAPTCHA_ON')&&!captcha_check($data['captcha'])) {
-            return( returnJson(1, '验证码错误'));
+        if (env('CAPTCHA_ON') && !captcha_check($data['captcha'])) {
+            return (returnJson(1, '验证码错误'));
         }
 
         $type = 1;
@@ -68,6 +68,7 @@ class Api
     {
         return (returnJson(msg: "成功"));
     }
+
     public function getScore($username)
     {
         $user = Db::table('tb_user_student')->where('username', $username)->find();
@@ -76,6 +77,7 @@ class Api
         }
         return (returnJson(0, 'success', $user['score']));
     }
+
     public function getUser()
     {
         $data = Db::table('tb_user')->select();

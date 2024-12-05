@@ -57,7 +57,7 @@ class Admin
 //        }
         //$count = $data->count();
         $data = $data->field("id,username")->select();
-        return (returnJson(0, 'success', $data,));
+        return (returnJson(0, 'success', $data));
     }
 
     //获取课程列表
@@ -105,7 +105,7 @@ class Admin
     }
 
     //获取课程列表
-    public function getCourse($page = 1, $limit = 10, $id = '')
+    public function getCourse($page = 1, $limit = 10, $cid = '')
     {
         $user = checkLogin();
         if ($user['type'] == 0) {
@@ -114,14 +114,21 @@ class Admin
 //        if ($id == '') {
 //            return (returnJson(1, '参数错误'));
 //        }
+        //如果存在cid则查询出该班级的课程
+        if ($cid) {
+            $data = Db::table('tb_course')->where('tb_course.cid', $cid);
+        } else {
+            $data = Db::table('tb_course');
+        }
 
-        $data = Db::table('tb_course')->alias('tb_course')
+
+        $data = $data->alias('tb_course')
             ->leftJoin('tb_subject s', 'tb_course.sid = s.id')
             ->leftJoin('tb_user u', 'tb_course.uid = u.id')
             ->leftJoin('tb_course_student cs', 'tb_course.id = cs.cid')
             ->leftJoin('tb_class c', 'tb_course.cid = c.id')
             ->group('tb_course.id')
-            ->field('tb_course.id,tb_course.title,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expire_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
+            ->field('tb_course.id,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expire_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
 
         $count = $data->count();
         $data = $data->page($page, $limit)
@@ -140,7 +147,9 @@ class Admin
             ->leftJoin('tb_user_student us', 'tb_class.id = us.cid')
             ->leftJoin('tb_subject s', 'tb_class.sid = s.id')
             ->group('tb_class.id')
-            ->field('tb_class.id,tb_class.title,count(us.id) as student_count,s.name,s.id as sid');
+            //查询出所有学生名字 放到student_name字段
+            ->field('tb_class.id,tb_class.title,count(us.id) as student_count,s.name,s.id as sid,group_concat(us.username) as student_name');
+
 
         $count = $data->count();
         $data = $data->select()->toArray();
@@ -168,7 +177,7 @@ class Admin
         }
         $data0 = Db::table('tb_user_student')
             ->leftjoin('tb_class', 'tb_user_student.cid=tb_class.id')
-            ->field('tb_user_student.id as value,username as title,tb_class.title as t',)->where('tb_user_student.state', 1)->select()->toArray();
+            ->field('tb_user_student.id as value,username as title,tb_class.title as t')->where('tb_user_student.state', 1)->select()->toArray();
         //将班级名放到学生名前面 [班级名]学生名
         foreach ($data0 as $key => $value) {
             if ($value['t'] == null) {
@@ -245,7 +254,7 @@ class Admin
         }
         $data0 = Db::table('tb_user_student')
             ->join('tb_class', 'tb_user_student.cid=tb_class.id')
-            ->field('tb_user_student.id as value,username as title,tb_class.title as t',)->select()->toArray();
+            ->field('tb_user_student.id as value,username as title,tb_class.title as t')->select()->toArray();
         //将班级名放到学生名前面 [班级名]学生名
         foreach ($data0 as $key => $value) {
             $data0[$key]['title'] = '[' . $value['t'] . ']' . $value['title'];
@@ -335,7 +344,7 @@ class Admin
         if ($id) {
             $data = Db::table('tb_user_student')->where('id', $id)->save($data);
         } else {
-             Db::table('tb_user_student')->insert(['username' => $data['username'],]);
+            Db::table('tb_user_student')->insert(['username' => $data['username'],]);
         }
         return (returnJson(0, 'success'));
     }
@@ -374,7 +383,7 @@ class Admin
         }
         $data = input('post.');
         $id = $data['id'];
-       // $title = $data['title'];
+        // $title = $data['title'];
         $sid = $data['sid'];
         $uid = $data['uid'];
 //        $cid = $data['cid'];

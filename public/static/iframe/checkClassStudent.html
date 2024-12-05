@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="layui-body" style="padding: 15px;width: 75%">
-    <div id="ID-transfer-demo-value"></div>
+    <div id="ID-transfer-demo-value" style="width: 100%"></div>
 </div>
 <script src="../layui/layui.js"></script>
 <script>
@@ -32,6 +32,7 @@
                     elem: '#ID-transfer-demo-value',
                     data: data0,
                     value: data,
+                    width: 500,
                     title: ['所有学生', '当前班级学生'],
                     showSearch: true,
                     onchange: function (obj, type) {
