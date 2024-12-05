@@ -15,33 +15,6 @@
                 <input autocomplete="off" class="layui-input layui-disabled" disabled name="id" type="text">
             </div>
         </div>
-        <!--        <div class="layui-form-item">-->
-        <!--            <label class="layui-form-label">课程名</label>-->
-        <!--            <div class="layui-input-inline">-->
-        <!--                <input autocomplete="off" class="layui-input" lay-verify="required" name="title" placeholder="请输入"-->
-        <!--                       type="text">-->
-        <!--            </div>-->
-        <!--        </div>-->
-        <!--        <div class="layui-form-item">-->
-        <!--            <div class="layui-inline">-->
-        <!--                <label class="layui-form-label">生效时间</label>-->
-        <!--                <div class="layui-input-inline">-->
-        <!--                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-1" name="effective_time"-->
-        <!--                           placeholder="yyyy-MM-dd"-->
-        <!--                           type="text">-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
-        <!--        <div class="layui-form-item">-->
-        <!--            <div class="layui-inline">-->
-        <!--                <label class="layui-form-label">失效时间</label>-->
-        <!--                <div class="layui-input-inline">-->
-        <!--                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-2" name="expire_time"-->
-        <!--                           placeholder="yyyy-MM-dd"-->
-        <!--                           type="text">-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
 
         <div class="layui-form-item">
             <div class="layui-inline">
@@ -92,21 +65,22 @@
         <div class="layui-form-item">
             <label class="layui-form-label">两周一次</label>
             <div class="layui-input-block">
-                <input lay-filter="switchTest" lay-skin="switch" name="switch" title="ON|OFF" type="checkbox">
+                <input lay-filter="switchTest" lay-skin="switch" name="two_week" title="ON|OFF" type="checkbox">
             </div>
         </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">启用</label>
+            <div class="layui-input-block">
+                <input lay-filter="state_switch" lay-skin="switch" name="state" title="ON|OFF" type="checkbox">
+            </div>
+        </div>
+
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button class="layui-btn" lay-filter="demo1" lay-submit type="submit">立即提交</button>
                 <!--                <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
             </div>
         </div>
-        <!--        <div class="layui-form-item">-->
-        <!--            <label class="layui-form-label">自动关闭</label>-->
-        <!--            <div class="layui-input-block">-->
-        <!--                <input lay-filter="switchTest" lay-skin="switch" name="switch" title="ON|OFF" type="checkbox">-->
-        <!--            </div>-->
-        <!--        </div>-->
     </form>
 </div>
 <script src="../layui/layui.js"></script>
@@ -146,6 +120,15 @@
         laydate.render({
             elem: '#ID-laydate-format-3',
             type: 'time',
+            format: 'H时m分',
+            shortcuts: [
+                {text: '上午10:00', value: '10时00分'},
+                {text: '下午14:00', value: '14时00分'},
+                {text: '下午16:00', value: '16时00分'},
+                {text: '下午16:30', value: '16时30分'},
+                {text: '下午18:00', value: '18时00分'},
+                {text: '下午18:30', value: '18时30分'},
+            ]
         });
         laydate.render({
             elem: '#ID-laydate-format-4',
@@ -243,6 +226,7 @@
             return false;
         });
     });
+
 </script>
 </body>
 </html>

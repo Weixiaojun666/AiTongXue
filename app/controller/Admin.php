@@ -125,10 +125,10 @@ class Admin
         $data = $data->alias('tb_course')
             ->leftJoin('tb_subject s', 'tb_course.sid = s.id')
             ->leftJoin('tb_user u', 'tb_course.uid = u.id')
-            ->leftJoin('tb_course_student cs', 'tb_course.id = cs.cid')
+           // ->leftJoin('tb_course_student cs', 'tb_course.id = cs.cid')
             ->leftJoin('tb_class c', 'tb_course.cid = c.id')
-            ->group('tb_course.id')
-            ->field('tb_course.id,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expire_time,tb_course.week,c.title as class_name,count(cs.id) as student_count');
+            //->group('tb_course.id')
+            ->field('tb_course.id,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expire_time,tb_course.week,c.title as class_name');
 
         $count = $data->count();
         $data = $data->page($page, $limit)
@@ -241,7 +241,7 @@ class Admin
         }
         $id = input('post.id');
         Db::table('tb_course')->where('id', $id)->delete();
-        Db::table('tb_course_student')->where('cid', $id)->delete();
+        //Db::table('tb_course_student')->where('cid', $id)->delete();
         return (returnJson(0, 'success'));
 
     }
