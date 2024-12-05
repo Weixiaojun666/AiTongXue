@@ -136,11 +136,11 @@ class Admin
             return (returnJson(1, '无权限'));
         }
         $data = Db::table('tb_class')->alias('tb_class')
-            ->Join('tb_user u', 'tb_class.uid = u.id')
+            //->Join('tb_user u', 'tb_class.uid = u.id')
             ->leftJoin('tb_user_student us', 'tb_class.id = us.cid')
             ->leftJoin('tb_subject s', 'tb_class.sid = s.id')
             ->group('tb_class.id')
-            ->field('tb_class.id,tb_class.title,u.username,count(us.id) as student_count,s.name,s.id as sid,u.id as uid');
+            ->field('tb_class.id,tb_class.title,count(us.id) as student_count,s.name,s.id as sid');
 
         $count = $data->count();
         $data = $data->select()->toArray();
