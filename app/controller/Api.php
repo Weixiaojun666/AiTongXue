@@ -238,5 +238,4 @@ class Api
         return (returnJson(0, 'success', $CourseTable));
 
     }
-
 }

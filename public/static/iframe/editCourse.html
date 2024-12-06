@@ -11,11 +11,9 @@
         <div class="layui-form-item" hidden="hidden">
             <label class="layui-form-label">ID</label>
             <div class="layui-input-inline">
-
                 <input autocomplete="off" class="layui-input layui-disabled" disabled name="id" type="text">
             </div>
         </div>
-
         <div class="layui-form-item">
             <div class="layui-inline">
                 <label class="layui-form-label">上课时间</label>
@@ -25,15 +23,6 @@
                 </div>
             </div>
         </div>
-        <!--        <div class="layui-form-item">-->
-        <!--            <div class="layui-inline">-->
-        <!--                <label class="layui-form-label">结束时间</label>-->
-        <!--                <div class="layui-input-inline">-->
-        <!--                    <input autocomplete="off" class="layui-input" id="ID-laydate-format-4" name="end_time"-->
-        <!--                           type="text">-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
         <div class="layui-form-item">
             <label class="layui-form-label">请选择老师</label>
             <div class="layui-input-block">
@@ -98,10 +87,12 @@
             var query = decodeURI(search);
             var currentId = query.substring(query.indexOf('=') + 1);
             params = JSON.parse(currentId);
-            //如果存在cid 则禁止编辑cid
+            //如果存在cid 且不存在id
             if (params.cid) {
                 cid = params.cid;
-                $('select[name="cid"]').attr('disabled', 'disabled');
+                if(!params.id){
+                    $('select[name="cid"]').attr('disabled', 'disabled');
+                }
             }
             if (params.uid) {
                 uid = params.uid;
@@ -156,22 +147,22 @@
                 }
             }
         });
-        //获取课程类型
-        $.ajax({
-            url: '../../api/getSubjectList',
-            type: 'GET',
-            success: function (res) {
-                if (res.code === 0) {
-                    var data = res.data;
-                    var html = '';
-                    for (var i = 0; i < data.length; i++) {
-                        html += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
-                    }
-                    $('select[name="sid"]').html(html);
-                    form.render('select');
-                }
-            }
-        });
+        // //获取课程类型
+        // $.ajax({
+        //     url: '../../api/getSubjectList',
+        //     type: 'GET',
+        //     success: function (res) {
+        //         if (res.code === 0) {
+        //             var data = res.data;
+        //             var html = '';
+        //             for (var i = 0; i < data.length; i++) {
+        //                 html += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
+        //             }
+        //             $('select[name="sid"]').html(html);
+        //             form.render('select');
+        //         }
+        //     }
+        // });
         //获取班级
         $.ajax({
             url: '../../admin/getClassList0',

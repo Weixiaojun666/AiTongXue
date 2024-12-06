@@ -128,7 +128,7 @@ class Admin
            // ->leftJoin('tb_course_student cs', 'tb_course.id = cs.cid')
             ->leftJoin('tb_class c', 'tb_course.cid = c.id')
             //->group('tb_course.id')
-            ->field('tb_course.id,u.username,s.name,tb_course.start_time,tb_course.end_time,tb_course.effective_time,tb_course.expire_time,tb_course.week,c.title as class_name');
+            ->field('tb_course.id,tb_course.uid,tb_course.cid,u.username,s.name,tb_course.start_time,tb_course.week,c.title as class_name');
 
         $count = $data->count();
         $data = $data->page($page, $limit)
@@ -384,15 +384,12 @@ class Admin
         $data = input('post.');
         $id = $data['id'];
         // $title = $data['title'];
-        $sid = $data['sid'];
+      //  $sid = $data['sid'];
         $uid = $data['uid'];
-//        $cid = $data['cid'];
+        $cid = $data['cid'];
         $week = $data['week'];
 
         $start_time = $data['start_time'];
-        $end_time = $data['end_time'];
-        $effective_time = $data['effective_time'];
-        $expire_time = $data['expire_time'];
 
 //        preg_match('/(\d+)时(\d+)分/', $start_time, $matches);
 //        $start_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
@@ -401,13 +398,10 @@ class Admin
 //        $end_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
 
         $data = [
-            'sid' => $sid,
+//            'sid' => $sid,
             'uid' => $uid,
-//            'cid' => $cid,
+            'cid' => $cid,
             'start_time' => $start_time,
-            'end_time' => $end_time,
-            'effective_time' => $effective_time,
-            'expire_time' => $expire_time,
             'week' => $week,
         ];
 
