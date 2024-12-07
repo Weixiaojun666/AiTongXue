@@ -34,9 +34,9 @@
                         </div>
 
                         <div class="layui-form-item">
-                            <label class="layui-form-label">课程内容</label>
+                            <label class="layui-form-label">课程标题</label>
                             <div class="layui-input-block">
-                                <input autocomplete="off" class="layui-input" name="content"
+                                <input autocomplete="off" class="layui-input" name="title"
                                        placeholder="请输入" type="text">
                             </div>
                         </div>
@@ -65,26 +65,10 @@
                 </div>
                 <div class="layui-card-body">
                     <div class="layui-form-item">
-                        <label class="layui-form-label">课程标题</label>
-                        <div class="layui-input-block">
-                            <input autocomplete="off" class="layui-input layui-disabled" disabled lay-verify="required"
-                                   name="title"
-                                   placeholder="请输入" type="text">
-                        </div>
-                    </div>
-                    <div class="layui-form-item">
                         <label class="layui-form-label">开始时间</label>
                         <div class="layui-input-block">
                             <input autocomplete="off" class="layui-input layui-disabled" disabled lay-verify="required"
                                    name="start_time"
-                                   placeholder="请输入" type="text">
-                        </div>
-                    </div>
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">结束时间</label>
-                        <div class="layui-input-block">
-                            <input autocomplete="off" class="layui-input layui-disabled" disabled lay-verify="required"
-                                   name="end_time"
                                    placeholder="请输入" type="text">
                         </div>
                     </div>
@@ -143,10 +127,8 @@
                             $('input[name=id]').val(data.data.id);
                             $('input[name=title]').val(data.data.title);
                             $('select[name=sid]').val(data.data.sid);
-                            $('input[name=content]').val(data.data.content);
                             $('input[name=remark]').val(data.data.remark);
                             $('input[name=start_time]').val(data.data.start_time);
-                            $('input[name=end_time]').val(data.data.end_time);
 
                             //如果有正在上课的信息 就将开始上课按钮改成 修改课程信息
                             form.render('select');
@@ -201,10 +183,13 @@
                                     });
                                 }
                             });
+
+                            end_time = new Date(new Date().toLocaleDateString() + ' ' + data.data.start_time);
+                            end_time.setHours(end_time.getHours() + 2);
                             var countdown = util.countdown({
-                                date: new Date().toLocaleDateString() + ' ' + data.data.end_time, // 目标时间值
-                                now: new Date(), // 当前时间，一般为服务器时间，此处以本地时间为例
-                                ready: function () { // 初始操作
+                                date: end_time,
+                                now: new Date(),
+                                ready: function () {
                                     clearTimeout(util.countdown.timer); // 清除旧定时器，防止多次渲染时重复执行。实际使用时不常用
                                 },
                                 clock: function (obj, inst) {  // 计时中
@@ -229,13 +214,6 @@
                             });
                             data.data.state = state;
                         }
-
-                        // var getTpl = document.getElementById('TPL').innerHTML; // 获取模板字符
-                        // var elemView = document.getElementById('view'); // 视图对象
-                        // // 渲染并输出结果
-                        // laytpl(getTpl).render(data.data, function (str) {
-                        //     elemView.innerHTML = str;
-                        // });
                     } else {
                         layer.msg(data.msg, {icon: 2});
                     }

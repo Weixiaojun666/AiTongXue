@@ -49,11 +49,21 @@ class Api
         $data = input('post.');
         $oldPassword = $data['oldPassword'];
         $newPassword = $data['newPassword'];
-        $result = Db::table('tb_user')->where('id', $user['uid'])->find();
+
+        if ($user['type'==1]){
+            $result = Db::table('tb_user_student')->where('id', $user['uid'])->find();
+        }else{
+            $result = Db::table('tb_user')->where('id', $user['uid'])->find();
+        }
         if ($result['password'] != hash("sha256", $oldPassword)) {
             return (returnJson(1, msg: "原密码错误"));
         }
-        $res = Db::table('tb_user')->where('id', $user['uid'])->update(['password' => hash("sha256", $newPassword)]);
+        if ($user['type'==1]){
+            $res = Db::table('tb_user_student')->where('id', $user['uid'])->update(['password' => hash("sha256", $newPassword)]);
+        }else{
+            $res = Db::table('tb_user')->where('id', $user['uid'])->update(['password' => hash("sha256", $newPassword)]);
+        }
+
         if ($res) {
             return (returnJson(msg: "修改成功"));
         } else {

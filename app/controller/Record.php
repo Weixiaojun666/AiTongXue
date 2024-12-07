@@ -119,7 +119,7 @@ class Record
         }
         $data = Db::table('tb_record_course_student')
             ->leftjoin('tb_user_student', 'tb_record_course_student.sid=tb_user_student.id')
-            ->field('tb_user_student.username as username,tb_user_student.id as sid,tb_record_course_student.id as id');
+            ->field('tb_user_student.username as username,tb_user_student.id as sid,tb_record_course_student.id as id,tb_record_course_student.state as state');
         if ($cid) {
             $data = $data->where('tb_record_course_student.cid', $cid);
         }
