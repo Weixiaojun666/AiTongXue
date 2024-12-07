@@ -33,14 +33,26 @@
         var layer = layui.layer;
 
 
-        form.render();
 
 
+        var hash = window.location.hash;
+        var id = null;
+        var url='../../record/getPointsList';
+        var index = hash.indexOf('?');
+        if (index !== -1) {
+            $('.layui-col-md4').hide();
+            var params = hash.substring(index + 1);
+            var arr = params.split('=');
+            if (arr[0] === 'id') {
+                id = arr[1];
+                url = url +'?id='+ id;
+            }
+        }
         table.render({
             elem: '#demoTable',
             toolbar: 'default'
 
-            , url: '../../record/getPointsList'
+            , url: url
             , height: 'full-200'
             , page: true
             , cols: [[
@@ -68,26 +80,6 @@
         });
 
 
-        var hash = window.location.hash;
-        var id = null;
-        var index = hash.indexOf('?');
-
-        if (index !== -1) {
-            $('.layui-col-md4').hide();
-            var params = hash.substring(index + 1);
-            var arr = params.split('=');
-            if (arr[0] === 'id') {
-                id = arr[1];
-                table.reload('demoTable', {
-                    page: {
-                        curr: 1
-                    },
-                    where: {
-                        id: id
-                    }
-                });
-            }
-        }
 
         table.on('toolbar(demoTable)', function (obj) {
             var checkStatus = table.checkStatus(obj.config.id);
