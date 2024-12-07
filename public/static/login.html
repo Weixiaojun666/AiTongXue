@@ -71,19 +71,59 @@
     </div>
 </form>
 <div class="layui-btn-container" style="text-align: center; margin-top: 50px;">
-    <button type="button" class="layui-btn" onclick="window.location.href = 'loginUK.html';">使用UK登录</button>
+    <button type="button" class="layui-btn layui-btn-primary layui-bg-blue" lay-on="tips-prompt">使用UK登录</button>
 </div>
 <div>
     <p style="text-align: center; margin-top: 50px;">© 2024 Ai同学管理系统</p>
 </div>
 <script src="../static/js/crypto-js/crypto-js.js"></script>
 <script src="../static/layui/layui.js"></script>
+<script src="../static/js/crypto-js/crypto-js.js"></script>
+<script src="../static/js/UsbKey3A/SoftKey3A.js"></script>
+<script src="../static/js/UsbKey3A/encoding/encoding.js"></script>
+<script src="../static/js/UsbKey3A/sm3/sm3.js"></script>
 <script>
     layui.use(function () {
         var form = layui.form;
         var layer = layui.layer;
         var $ = layui.$;
+        var util = layui.util;
 
+            util.on('lay-on', {
+                'tips-prompt': async function () {
+                    if (navigator.userAgent.indexOf("MSIE") > 0 && !navigator.userAgent.indexOf("opera") > -1) {
+                        layer.msg('不支持该浏览器', {icon: 2});
+                        return;
+                    }
+                    var DevicePath
+                    var ret, version, versionex
+                    var mSoftKey3A = new SoftKey3A();//注意，由于USB的操作是异步的，所以所有函数的调用前必须加await !!!!!!!!!
+                    DevicePath = await mSoftKey3A.FindPort(1);//'查找是否存在多把加密锁
+                    if (mSoftKey3A.GetLastError() === 0) {
+                        layer.msg('系统上发现有2把及以上的UK，请只插入要进行的UK。', {icon: 2});
+                        return false;
+                    }
+                    DevicePath = await mSoftKey3A.FindPort(0);//'查找是否存在加密锁
+                    if (mSoftKey3A.GetLastError() !== 0) {
+                        layer.msg('未发现UK，请插入UK', {icon: 2});
+                        return false;
+                    }
+
+                    outstring =await mSoftKey3A.GetChipID(DevicePath);
+                    if (mSoftKey3A.GetLastError() !== 0) { window.alert("返回芯片唯一ID时出现错误"); return; }
+                    window.alert("已成功返回芯片唯一ID：" + outstring);
+
+                    pin = ''
+                    layer.prompt({title: '请输入PIN', formType: 1}, function (value, index, elem) {
+                        if (value === '') return elem.focus();
+                        //layer.msg('获得：'+ util.escape(value)); // 显示 value
+                        // 关闭 prompt
+                        pin = util.escape(value);
+                        layer.close(index);
+                    });
+
+                },
+            });
         // 提交事件
         form.on('submit(demo-login)', function (data) {
             var field = data.field;
@@ -105,9 +145,21 @@
             });
             return false;
         });
-
+        navigator.hid.addEventListener('connect', ({device}) => {
+            var mSoftKey3A=new SoftKey3A();
+            if(mSoftKey3A.MacthUKeyID(device))
+            {
+                layer.msg(`UKEY已被插入，被插入的设备是: ${device.productName}：${device.vendorId}--${device.productId}`);
+            }
+        });
+        navigator.hid.addEventListener('disconnect', ({device}) => {
+            var mSoftKey3A=new SoftKey3A();
+            if(mSoftKey3A.MacthUKeyID(device))
+            {
+                layer.msg(`UKEY已被拨出，被拨出的设备是： ${device.productName}：${device.vendorId}--${device.productId}`);
+            }
+        });
     });
 </script>
-
 </body>
 </html>
