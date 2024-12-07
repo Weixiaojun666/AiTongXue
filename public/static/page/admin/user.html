@@ -33,22 +33,26 @@
                 {type: 'radio', title: '', fixed: true},
                 {field: 'id', title: 'ID', hide: true},
                 {field: 'username', title: '用户名'},
-                {field: 'teach', title: '教师',templet: function (d) {
-                        if (d.teach === 1) {
-                            return '<span class="layui-badge layui-bg-green">是</span>';
+                {
+                    field: 'state', title: '状态', templet: function (d) {
+                        if (d.state === 1) {
+                            return '<span class="layui-badge layui-bg-green">正常</span>';
                         }
-                        if (d.teach === 0) {
-                            return '<span class="layui-badge layui-bg-red">否</span>';
-                        }
-                    }},
-                {field: 'admin', title: '管理',templet:function (d){
-                        if (d.admin === 1) {
-                            return '<span class="layui-badge layui-bg-green">是</span>';
-                        }
-                        if (d.admin === 0) {
-                            return '<span class="layui-badge layui-bg-red">否</span>';
+                        if (d.state === 0) {
+                            return '<span class="layui-badge layui-bg-red">停用</span>';
                         }
                     }
+
+                }, {
+                    field: 'type', title: '类型', templet: function (d) {
+                        if (d.type === 2) {
+                            return '<span class="layui-badge layui-bg-purple">教师</span>';
+                        }
+                        if (d.type === 3) {
+                            return '<span class="layui-badge layui-bg-cyan ">管理员</span>';
+                        }
+                    }
+
                 },
                 {field: 'remark', title: '备注'},
             ]],
