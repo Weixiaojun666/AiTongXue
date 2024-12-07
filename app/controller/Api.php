@@ -10,19 +10,17 @@ class Api
 {
     public function login()
     {
-        //TYPE 0未登录 1学生 2教师 3管理员
+        //type 1学生 2教师 3管理员
         $data = input('post.');
         if (env('CAPTCHA_ON') && !captcha_check($data['captcha'])) {
             return (returnJson(1, '验证码错误'));
         }
-
-        $type = 1;
         $user = Db::table('tb_user_student')->where(['username' => $data['username'], 'state' => 1])->find();
+        if ($user) {
+            $user['type'] = 1;
+        }
         if (!$user) {
             $user = Db::table('tb_user')->where(['username' => $data['username'], 'state' => 1])->find();
-            if ($user) {
-                $type = $user['type'];
-            }
         }
         if (!$user) {
             return (returnJson(1, msg: "用户不存在"));
@@ -33,10 +31,9 @@ class Api
         if ($user['state'] != 1) {
             return (returnJson(1, msg: "用户已被禁用"));
         }
-        $user = ["uid" => $user["id"], "username" => $user["username"], "type" => $type];
+        $user = ["uid" => $user["id"], "username" => $user["username"], "type" => $user["type"]];
         Session('user', $user);
         return (returnJson(msg: "登陆成功"));
-
     }
 
     public function logout()
@@ -109,50 +106,6 @@ class Api
         }
         return (returnJson(0, 'success', $data, count($data)));
     }
-
-//      此方法已在前端实现 已废弃
-//    public function getMenu()
-//    {
-//        $user = checkLogin();
-//        if ($user['type'] == 1) {
-//            //return redirect('/static/data/menu/student.json');
-//            return (returnJson(0, 'success', json_decode(file_get_contents('static/data/menu/student.json'))));
-//        }
-//        if ($user['type'] == 2) {
-//            return (returnJson(0, 'success', json_decode(file_get_contents('static/data/menu/teacher.json'))));
-//        }
-//        if ($user['type'] == 3) {
-//            return (returnJson(0, 'success', json_decode(file_get_contents('static/data/menu/admin.json'))));
-//        }
-//        return (returnJson(-1, '获取失败'));
-//    }
-
-    //获取课程表数据
-//    public function getCourseList($page = 1, $limit = 10, $title = null)
-//    {
-//        $user = checkLogin();
-//        if ($user['type'] == 0) {
-//            $data = Db::table('tb_course')->join('tb_course_student', 'tb_course.id=tb_course_student.cid')->where('tb_course_student.sid', $user['uid'])
-//                ->join('tb_record_subject', 'tb_course.subject=tb_record_subject.id');
-//        }
-//        if ($user['type'] == 1) {
-//            $data = Db::table('tb_course')->where('tid', $user['uid']);
-//        }
-//
-//        if ($user['type'] == 2) {
-//            $data = Db::table('tb_course');
-//        }
-//        $data = $data->where('title', 'like', '%' . $title . '%');
-//        $count = $data->count();
-//        $data = $data->page($page, $limit)
-//            ->join('tb_record_subject', 'tb_course.subject=tb_record_subject.id')
-//            ->join('tb_user', 'tb_course.tid=tb_user.id')
-//            ->join('tb_course_student', 'tb_course.id=tb_course_student.cid')
-//            ->group('tb_course.id')
-//            ->field('tb_course.*,tb_record_subject.name,tb_user.username as username,count(tb_course_student.id) as student_count')
-//            ->select();
-//        return (returnJson(0, 'success', $data, $count));
-//    }
 
     //获取课程列表
     public function getCourseList($page = 1, $limit = 10, $id = '')

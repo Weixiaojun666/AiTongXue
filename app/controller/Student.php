@@ -35,9 +35,10 @@ class Student
     public function getInfo(): Json
     {
         $user = checkLogin();
-        if ($user['type'] != 1) {
+        if ($user['type'] != 0) {
             return (returnJson(1, '无权限'));
         }
+
         $data = Db::table('tb_user_student')->where("id", $user["uid"])
             ->field(['id', 'username', 'score'])
             ->find();
@@ -54,6 +55,7 @@ class Student
         if ($user['type'] != 0) {
             return (returnJson(1, '无权限'));
         }
+
         $data = Db::table('tb_record_score')->where("sid", $user["uid"]);
         $count = $data->count();
         $data = $data->page($page, $limit)->select();
@@ -66,9 +68,10 @@ class Student
     public function getCourse($page = 1, $limit = 10, $id = ''): Json
     {
         $user = checkLogin();
-        if ($user['type'] == 0) {
-            $id = $user['uid'];
+        if ($user['type'] != 0) {
+            return (returnJson(1, '无权限'));
         }
+
         if ($id == '') {
             return (returnJson(1, '参数错误'));
         }
@@ -109,6 +112,4 @@ class Student
         }
         return (returnJson(0, 'success', $data, count($data)));
     }
-
-
 }

@@ -23,6 +23,18 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">教师</label>
+            <div class="layui-input-block">
+                <input lay-filter="switchTest" lay-skin="switch" name="teach" title="ON|OFF" type="checkbox">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">管理</label>
+            <div class="layui-input-block">
+                <input lay-filter="switchTest" lay-skin="switch" name="admin" title="ON|OFF" type="checkbox">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">备注</label>
             <div class="layui-input-inline">
                 <input autocomplete="off" class="layui-input" name="remark" placeholder="请输入"
@@ -52,15 +64,13 @@
         var form = layui.form;
 
         var search = window.location.search;
-        var params = JSON.parse('{"' + decodeURI(search.substring(1))
-            .replace(/&/g, '","')
-            .replace(/=/g, '":"') + '"}');
         //如果存在参数，则填充表单
-        if (params) {
-            $('input[name="id"]').val(params.id);
-            $('input[name="username"]').val(params.username);
-
-            //layer.msg(params.username);
+        if (search !== '') {
+            var query = decodeURI(search);
+            var currentId = query.substring(query.indexOf('=') + 1);
+            params = JSON.parse(currentId);
+            form.val('form', params);
+            form.render();
         }
         //监听提交
         form.on('submit(demo1)', function (data) {

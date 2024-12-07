@@ -9,7 +9,7 @@ class Admin
     public function getStudentList($page = 1, $limit = 10, $username = null, $state = 1)
     {
         $user = checkLogin();
-        if (!($user['type'] == 3 || $user['type'] == 2)) {
+        if ($user['type'] != 2 && $user['type'] != 3) {
             return (returnJson(1, '无权限'));
         }
         $data = Db::table('tb_user_student');
@@ -80,7 +80,7 @@ class Admin
     public function getCourseList($page = 1, $limit = 10, $title = null)
     {
         $user = checkLogin();
-        if ($user['type'] == 0) {
+        if ($user['type'] != 2 && $user['type'] != 3) {
             return (returnJson(1, '无权限'));
         }
         if ($user['type'] == 2) {
@@ -108,17 +108,18 @@ class Admin
     public function getCourse($page = 1, $limit = 10, $cid = '')
     {
         $user = checkLogin();
-        if ($user['type'] == 0) {
-            $id = $user['uid'];
+        if ($user['type'] != 2 && $user['type'] != 3) {
+            return (returnJson(1, '无权限'));
         }
-//        if ($id == '') {
-//            return (returnJson(1, '参数错误'));
-//        }
-        //如果存在cid则查询出该班级的课程
-        if ($cid) {
-            $data = Db::table('tb_course')->where('tb_course.cid', $cid);
+        if ($user['type'] == 2) {
+            $data = Db::table('tb_course')->where('tb_course.uid', $user['uid']);
         } else {
             $data = Db::table('tb_course');
+        }
+
+        //如果存在cid则查询出该班级的课程
+        if ($cid) {
+            $data = $data->where('tb_course.cid', $cid);
         }
 
 

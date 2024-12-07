@@ -4,27 +4,18 @@
     "name": "index"
   },
   {
-    "title": "记录查看",
-    "name": "record",
-    "children": [
-      {
-        "title": "积分记录",
-        "name": "points"
-      },
-      {
-        "title": "参赛记录",
-        "name": "match"
-      },
-      {
-        "title": "课程记录",
-        "name": "course"
-      },
-      {
-        "title": "续费记录",
-        "name": "renew"
-      }
-    ]
+    "title": "课程列表",
+    "name": "admin/course"
   },
+  {
+    "title": "学生列表",
+    "name": "admin/student"
+  },
+  {
+    "title": "课程记录",
+    "name": "record/course"
+  },
+
   {
     "title": "个人中心",
     "name": "personal"

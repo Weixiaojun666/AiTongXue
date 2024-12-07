@@ -140,17 +140,17 @@
                         var state = '当前未上课';
                         lay('#test2').html("当前未上课");
                         if (data.data !== null) {
-                            $('input[name=id]').val(data.data.course.id);
-                            $('input[name=title]').val(data.data.course.title);
-                            $('select[name=sid]').val(data.data.course.sid);
-                            $('input[name=content]').val(data.data.course.content);
-                            $('input[name=remark]').val(data.data.course.remark);
-                            $('input[name=start_time]').val(data.data.course.start_time);
-                            $('input[name=end_time]').val(data.data.course.end_time);
+                            $('input[name=id]').val(data.data.id);
+                            $('input[name=title]').val(data.data.title);
+                            $('select[name=sid]').val(data.data.sid);
+                            $('input[name=content]').val(data.data.content);
+                            $('input[name=remark]').val(data.data.remark);
+                            $('input[name=start_time]').val(data.data.start_time);
+                            $('input[name=end_time]').val(data.data.end_time);
 
                             //如果有正在上课的信息 就将开始上课按钮改成 修改课程信息
                             form.render('select');
-                            state = '当前正在上课: ' + data.data.course.title;
+                            state = '当前正在上课: ' + data.data.title;
 
                             table.render({
                                 elem: '#demoTable'
@@ -202,7 +202,7 @@
                                 }
                             });
                             var countdown = util.countdown({
-                                date: new Date().toLocaleDateString() + ' ' + data.data.course.end_time, // 目标时间值
+                                date: new Date().toLocaleDateString() + ' ' + data.data.end_time, // 目标时间值
                                 now: new Date(), // 当前时间，一般为服务器时间，此处以本地时间为例
                                 ready: function () { // 初始操作
                                     clearTimeout(util.countdown.timer); // 清除旧定时器，防止多次渲染时重复执行。实际使用时不常用

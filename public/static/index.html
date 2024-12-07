@@ -110,7 +110,8 @@
                     // $('.layui-nav-img').attr('src', data.avatar);
                     $('#Name').text(data.data.username);
                     userInfo = data.data;
-                    indexType = data.data.type;
+                    indexType = userInfo.type;
+
                     if (indexType === 1) {
                         $.getJSON('../static/data/menu/student.json', function (data) {
                             laytpl($('#menu-tpl').html()).render({"menu": getMenuHtml(data)}, function (html) {

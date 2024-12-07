@@ -11,10 +11,4 @@ class Index extends BaseController
         #重定向到/static/
         return redirect('/static/');
     }
-
-    public function getStudentIndex()
-    {
-
-
-    }
 }

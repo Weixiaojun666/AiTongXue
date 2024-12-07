@@ -79,7 +79,7 @@ class Teacher
     {
         $user = checkLogin();
         if ($user['type'] != 2) {
-            return (returnJson(0, '无权限'));
+            return returnJson(1, '无权限');
         }
         $data = Db::table('tb_record_subject')->where("state", 1)->select();
         return returnJson(0, 'success', $data, count($data));
@@ -106,7 +106,7 @@ class Teacher
     {
         $user = checkLogin();
         if ($user['type'] != 2) {
-            exit(returnJson(1, '无权限'));
+            return returnJson(1, '无权限');
         }
         $data = input('post.');
 
