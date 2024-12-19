@@ -1,23 +1,5 @@
 <div style="padding: 15px;">
-
-    <!--    <script id="TPL" type="text/html">-->
-    <!--        <div class="layui-row layui-col-space8">-->
-    <!--            <div class="layui-col-xs6">-->
-    <!--                <blockquote class="layui-elem-quote layui-text">-->
-    <!--                    <h3 style="align-content: center">您好 {{= d.user.username }} 老师 </h3>-->
-    <!--                </blockquote>-->
-    <!--            </div>-->
-    <!--            <div class="layui-col-xs6">-->
-    <!--                <blockquote class="layui-elem-quote layui-text">-->
-    <!--                    <h3 style="align-content: center">{{ d.state }}</h3>-->
-    <!--                </blockquote>-->
-    <!--            </div>-->
-    <!--        </div>-->
-    <!--    </script>-->
-    <div id="view"></div>
-
-
-    <div class="layui-row layui-col-space8">
+    <div class="layui-row layui-col-space8" id="course_info">
         <div class="layui-col-xs6">
             <div class="layui-card layui-panel">
                 <div class="layui-card-header">
@@ -77,21 +59,21 @@
 
         </div>
     </div>
-</div>
-<div class="layui-card layui-panel">
-    <div class="layui-card-header">
-        课堂学生列表
-    </div>
-    <div class="layui-card-body">
-        <table class="layui-hide" id="demoTable" lay-filter="demoTable"></table>
-    </div>
-</div>
-<div>
-    <blockquote class="layui-elem-quote layui-text">
-        <h4><span class="layui-word-aux layui-font-green" id="test2"></span></h4>
-    </blockquote>
-</div>
 
+    <div class="layui-card layui-panel" id="student_list">
+        <div class="layui-card-header">
+            课堂学生列表
+        </div>
+        <div class="layui-card-body">
+            <table class="layui-hide" id="demoTable" lay-filter="demoTable"></table>
+        </div>
+    </div>
+    <div>
+        <blockquote class="layui-elem-quote layui-text">
+            <h4><span class="layui-word-aux layui-font-green" id="test2"></span></h4>
+        </blockquote>
+    </div>
+</div>
 <script id="TPL-dropdpwn-demo" type="text/html">
     <button class="layui-btn layui-btn-primary dropdpwn-demo">
         <span>{{-  d.state === 1 ? '<div class="layui-badge">表现差劲</div>' : d.state === 2 ? '<div
@@ -123,6 +105,8 @@
                     if (data.code === 0) {
                         var state = '当前未上课';
                         lay('#test2').html("当前未上课");
+                        $('#student_list').hide();
+                        $('#course_info').hide();
                         if (data.data !== null) {
                             $('input[name=id]').val(data.data.id);
                             $('input[name=title]').val(data.data.title);
@@ -133,6 +117,8 @@
                             //如果有正在上课的信息 就将开始上课按钮改成 修改课程信息
                             form.render('select');
                             state = '当前正在上课: ' + data.data.title;
+                            $('#student_list').show();
+                            $('#course_info').show();
 
                             table.render({
                                 elem: '#demoTable'
@@ -276,7 +262,7 @@
         //update()
         UpdateInfo();
         //每五秒自动刷新
-        // setInterval(update, 5000);
+        setInterval(UpdateInfo, 5000);
 
         //提交评分
         function submitStudentInfo(id, key, value) {

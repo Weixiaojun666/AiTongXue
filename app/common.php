@@ -41,3 +41,4 @@ function checkLogin()
     }
     return $user;
 }
+

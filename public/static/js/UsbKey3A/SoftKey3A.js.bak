@@ -29,14 +29,14 @@ var FAILPINPWD = -24;
 var USBStatusFail = -50;  
 var ERR_SET_REPORT=-94;
 var ERR_GET_REPORT=-93;
-var ERR_OVER_SEC_MAX_LEN = -81;
+
 var MAX_LEN = 496;
 
 var SM2_ADDBYTE = 97;//
 var MAX_ENCLEN = 128; //
 var MAX_DECLEN = (MAX_ENCLEN + SM2_ADDBYTE); //
 var SM2_USENAME_LEN = 80;// 
-
+var ERR_OVER_SEC_MAX_LEN = -81;
 var ECC_MAXLEN = 32;
 var PIN_LEN = 16;
 

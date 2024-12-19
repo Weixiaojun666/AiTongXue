@@ -2,9 +2,12 @@
 
 namespace app\controller;
 
+use Mdanter\Ecc\EccFactory;
+use Rtgm\ecc\RtEccFactory;
 use think\captcha\facade\Captcha;
 use think\facade\Db;
 use think\facade\Session;
+use Rtgm\smecc\SM2\Sm2WithSm3;
 
 class Api
 {
@@ -34,6 +37,34 @@ class Api
         $user = ["uid" => $user["id"], "username" => $user["username"], "type" => $user["type"]];
         Session('user', $user);
         return (returnJson(msg: "登陆成功"));
+    }
+    public function ukLogin()
+    {
+        $data = input('post.');
+        $username = $data['user'];
+        $str = $data['str'];
+        $sign = $data['sign'];
+        //从user表中根据nickname查询出用户的公钥
+        $user = Db::table('tb_user')->where(['nickname'=> $username])->find();
+        if (!$user) {
+            return (returnJson(1, msg: "用户不存在"));
+        }
+        if ($user['state'] != 1) {
+            return (returnJson(1, msg: "用户已被禁用"));
+        }
+        $PubKeyX=$user['pubkey_x'];
+        $PubKeyY=$user['pubkey_y'];
+
+        $Sm2WithSm3 = new Sm2WithSm3();
+        $result = $Sm2WithSm3->YtVerfiyBySoft($username,$str,$PubKeyX,$PubKeyY,$sign,EccFactory::getNistCurves()->generator256());
+
+        if ($result) {
+            $user = ["uid" => $user["id"], "username" => $user["username"], "type" => 3];
+            Session('user', $user);
+            return (returnJson(msg: "登陆成功"));
+        } else {
+            return (returnJson(1, msg: "签名错误"));
+        }
     }
 
     public function logout()

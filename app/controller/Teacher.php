@@ -22,15 +22,16 @@ class Teacher
                 ->where('week', date('w', time()))
                 ->where(['uid' => $user['uid'], 'state'=>1])
                 ->find();
+            if ($data == null) {
+                Db::table('tb_record_course')->where('id', $result['id'])->update(['state' => 1]);
+                return returnJson(0, 'success', $data);
+            }
             $data['student'] = Db::table('tb_record_course_student')->where('tb_record_course_student.cid', $result['id'])
                 ->alias('a')
                 ->join('tb_user_student b', 'a.sid=b.id')
                 ->field('a.*,b.username')
                 ->select();
-            if ($data == null) {
-                Db::table('tb_record_course')->where('id', $result['id'])->update(['state' => 1]);
-                return returnJson(0, 'success', $data);
-            }
+
             $data['id']=$result['id'];
             $data['title']=$result['title'];
             $data['remark']=$result['remark'];

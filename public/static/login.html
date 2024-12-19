@@ -96,32 +96,59 @@
                         return;
                     }
                     var DevicePath
-                    var ret, version, versionex
-                    var mSoftKey3A = new SoftKey3A();//注意，由于USB的操作是异步的，所以所有函数的调用前必须加await !!!!!!!!!
-                    DevicePath = await mSoftKey3A.FindPort(1);//'查找是否存在多把加密锁
+                    var mSoftKey3A = new SoftKey3A();
+                    DevicePath = await mSoftKey3A.FindPort(1);
                     if (mSoftKey3A.GetLastError() === 0) {
                         layer.msg('系统上发现有2把及以上的UK，请只插入要进行的UK。', {icon: 2});
                         return false;
                     }
-                    DevicePath = await mSoftKey3A.FindPort(0);//'查找是否存在加密锁
+                    DevicePath = await mSoftKey3A.FindPort(0);
                     if (mSoftKey3A.GetLastError() !== 0) {
                         layer.msg('未发现UK，请插入UK', {icon: 2});
                         return false;
                     }
-
-                    outstring =await mSoftKey3A.GetChipID(DevicePath);
-                    if (mSoftKey3A.GetLastError() !== 0) { window.alert("返回芯片唯一ID时出现错误"); return; }
-                    window.alert("已成功返回芯片唯一ID：" + outstring);
-
                     pin = ''
-                    layer.prompt({title: '请输入PIN', formType: 1}, function (value, index, elem) {
+                    layer.prompt({title: '请输入PIN', formType: 1}, async function (value, index, elem) {
                         if (value === '') return elem.focus();
-                        //layer.msg('获得：'+ util.escape(value)); // 显示 value
-                        // 关闭 prompt
                         pin = util.escape(value);
                         layer.close(index);
-                    });
+                        // id =await mSoftKey3A.GetChipID(DevicePath);
+                        // if (mSoftKey3A.GetLastError() !== 0) {
+                        //     layer.msg('获取UK芯片ID失败');
+                        //     return;
+                        // }
+                        user =await mSoftKey3A.GetSm2UserName(DevicePath);
+                        if (user === '') {
+                            layer.msg('获取UK用户名失败');
+                            return;
+                        }
+                        //生成随机字符串
+                        str = Math.random().toString(36).slice(-8);
+                        sign = await mSoftKey3A.YtSign(str, pin, DevicePath);
+                        if (mSoftKey3A.GetLastError() !== 0) {
+                            layer.msg("验证失败!");
+                            return;
+                        }
+                        $.ajax({
+                            url: '../api/ukLogin',
+                            type: 'POST',
+                            data: {
+                                user: user,
+                                sign: sign,
+                                str: str
+                            },
+                            success: function (data) {
+                                if (data.code === 0) {
+                                    layer.msg('登录成功', {icon: 1});
+                                    window.location.href = '/';
+                                } else {
+                                    layer.msg(data.msg, {icon: 2});
+                                }
+                            }
+                        });
 
+                        layer.close(index);
+                    });
                 },
             });
         // 提交事件
