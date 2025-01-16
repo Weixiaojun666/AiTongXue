@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="webkit" name="renderer">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>小记者投稿</title>
+    <link href="../../static/layui/css/layui.css" rel="stylesheet">
+</head>
+<body>
+<div style=" margin: 25px ;">
+<h2 style="text-align: center">小记者投稿</h2>
+<br>
+<form class="layui-form">
+<div class="layui-form-item">
+    <label class="layui-form-label">姓名</label>
+    <div class="layui-input-block">
+        <input type="text" name="name" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">所在学校</label>
+    <div class="layui-input-block">
+        <input type="text" name="school" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">所在班级</label>
+    <div class="layui-input-block">
+        <input type="text" name="class" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">联系电话</label>
+    <div class="layui-input-block">
+        <input type="text" name="tel" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">指导老师</label>
+    <div class="layui-input-block">
+        <input type="text" name="teacher" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">小记者编号</label>
+    <div class="layui-input-block">
+        <input type="text" name="sid" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+    </div>
+</div>
+<div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">投稿内容</label>
+    <div class="layui-input-block">
+        <textarea placeholder="请输入内容" class="layui-textarea" name="content" lay-verify="required" autocomplete="off" lay-affix="clear" ></textarea>
+    </div>
+</div>
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <button type="submit" class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
+<!--        <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+    </div>
+</div>
+
+</form>
+</div>
+<script src="../../static/layui/layui.js"></script>
+<script>
+    layui.use(function (){
+        var form = layui.form;
+        var $ = layui.$;
+        var layer = layui.layer;
+        form.on('submit(demo1)', function (data) {
+            var field = data.field;
+            $.ajax({
+                url:'../../xjz/post',
+                type:'POST',
+                data: field,
+                success:function (data){
+                    if (data.code === 0) {
+                        layer.msg('提交成功', {icon: 1});
+                        window.location.href = '../static/xjz/success.html';
+                }else{
+                        layer.msg(data.msg, {icon: 2});
+                        $('img').click();
+                        $('input').val('');
+                    }
+                }
+            });
+            return false;
+        });
+    })
+</script>
+</body>
+</html>
