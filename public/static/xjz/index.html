@@ -14,25 +14,25 @@
 <br>
 <form class="layui-form">
 <div class="layui-form-item">
-    <label class="layui-form-label">姓名</label>
+    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>姓名</label>
     <div class="layui-input-block">
         <input type="text" name="name" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
 </div>
 <div class="layui-form-item">
-    <label class="layui-form-label">所在学校</label>
+    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>所在学校</label>
     <div class="layui-input-block">
         <input type="text" name="school" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
 </div>
 <div class="layui-form-item">
-    <label class="layui-form-label">所在班级</label>
+    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>所在班级</label>
     <div class="layui-input-block">
         <input type="text" name="class" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
 </div>
 <div class="layui-form-item">
-    <label class="layui-form-label">联系电话</label>
+    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>联系电话</label>
     <div class="layui-input-block">
         <input type="text" name="tel" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
@@ -40,21 +40,37 @@
 <div class="layui-form-item">
     <label class="layui-form-label">指导老师</label>
     <div class="layui-input-block">
-        <input type="text" name="teacher" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+        <input type="text" name="teacher" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
 </div>
 <div class="layui-form-item">
-    <label class="layui-form-label">小记者编号</label>
+    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>小记者编号</label>
     <div class="layui-input-block">
         <input type="text" name="sid" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
 </div>
 <div class="layui-form-item layui-form-text">
-    <label class="layui-form-label">投稿内容</label>
+    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>投稿内容</label>
     <div class="layui-input-block">
         <textarea placeholder="请输入内容" class="layui-textarea" name="content" lay-verify="required" autocomplete="off" lay-affix="clear" ></textarea>
     </div>
 </div>
+    <label class="layui-form-label">绘画，书法作品点击选择图片上传</label>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">绘画，书法作品点击选择图片上传</label>
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" id="ID-upload-demo-btn-2">
+                <i class="layui-icon layui-icon-upload"></i> 多图片上传
+            </button>
+            <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 11px;">
+                预览图：
+                <div class="layui-upload-list" id="upload-demo-preview"></div>
+            </blockquote>
+        </div>
+    </div>
+    <div class="layui-upload">
+
+    </div>
 <div class="layui-form-item">
     <div class="layui-input-block">
         <button type="submit" class="layui-btn" lay-submit lay-filter="demo1">立即提交</button>
@@ -70,8 +86,33 @@
         var form = layui.form;
         var $ = layui.$;
         var layer = layui.layer;
+        var upload = layui.upload;
+        var element = layui.element;
+
+        var files = [];
+        upload.render({
+            elem: '#ID-upload-demo-btn-2',
+            url: '../../xjz/upload', // 实际使用时改成您自己的上传接口即可。
+            multiple: true,
+            before: function(obj){
+                // 预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#upload-demo-preview').append('<img src="'+ result +'" alt="'+ file.name +'" style="width: 90px; height: 90px;">')
+                });
+            },
+            done: function(res){
+                //获取上传图片的路径
+                var img = res.data.data;
+                files.push(img);
+              layer.msg('上传成功', {icon: 1});
+            }
+        });
         form.on('submit(demo1)', function (data) {
             var field = data.field;
+            //如果有图片上传
+            if(files.length > 0){
+                field['img'] = files;
+            }
             $.ajax({
                 url:'../../xjz/post',
                 type:'POST',

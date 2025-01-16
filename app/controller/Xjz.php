@@ -4,6 +4,7 @@ namespace app\controller;
 
 use Exception;
 use think\facade\Db;
+use think\facade\Filesystem;
 
 class Xjz
 {
@@ -59,5 +60,14 @@ class Xjz
             return (returnJson(1, $e->getMessage()));
         }
         return (returnJson(0, 'success'));
+    }
+    public function upload()
+    {
+        $file = request()->file('file');
+
+        $saveName =  Filesystem::disk('public')->putFile( 'xjz', $file, 'md5');
+
+        return (returnJson(0, 'success', $saveName));
+
     }
 }
