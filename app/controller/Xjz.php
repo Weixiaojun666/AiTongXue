@@ -62,6 +62,11 @@ class Xjz
         if (!$user) return (returnJson(1, '无权限'));
         $id = input('post.id');
         try {
+            //多选删除
+            if (is_array($id)) {
+                Db::table('tb_xjz_content')->where('id', 'in', $id)->delete();
+                return (returnJson(0, 'success'));
+            }
             Db::table('tb_xjz_content')->where('id', $id)->delete();
         } catch (Exception $e) {
             return (returnJson(1, $e->getMessage()));
