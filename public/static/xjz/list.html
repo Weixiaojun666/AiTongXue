@@ -13,6 +13,11 @@
   <h2 style="text-align: center">小记者投稿查看</h2>
   <br>
   <table id="demoTable" lay-filter="demoTable"></table>
+  <script id="barDemo" type="text/html">
+    <div class="layui-btn-container">
+      <button class="layui-btn layui-btn-sm" lay-event="checkImg">查看图片</button>
+    </div>
+  </script>
 </div>
 
 
@@ -42,14 +47,31 @@
       page: true,
       cols: [[
         {type: 'radio', fixed: true},
-        {field: 'name', title: '姓名'},
-        {field: 'school', title: '所在学校'},
-        {field: 'class', title: '所在班级'},
-        {field: 'tel', title: '练习电话'},
-        {field: 'teacher', title: '指导老师'},
-        {field: 'sid', title: '小记者编号'},
+        {field: 'name', title: '姓名', width: 120},
+        {field: 'school', title: '所在学校', width: 180},
+        {field: 'class', title: '所在班级', width: 180},
+        {field: 'tel', title: '联系电话', width: 180},
+        {field: 'teacher', title: '指导老师',width: 120},
+        {field: 'sid', title: '小记者编号',width: 120},
         {field: 'content', title: '投稿内容'},
+        {field: 'right', title: '查看图片', toolbar: '#barDemo', width: 250, minWidth: 150},
       ]],
+    });
+    table.on('tool(demoTable)', function (obj) {
+      switch (obj.event) {
+        case 'checkImg':
+          layer.open({
+            type: 2,
+            title: '查看',
+            content: '../xjz/checkImg.html?data=' + encodeURI(JSON.stringify(obj.data)),
+            area: ['80%', '80%'],
+            maxmin: true,
+            end: function () {
+              table.reload('demoTable');
+            }
+          });
+          break;
+      }
     });
     table.on('toolbar(demoTable)', function (obj) {
       var checkStatus = table.checkStatus(obj.config.id);

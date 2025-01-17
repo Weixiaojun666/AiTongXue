@@ -28,6 +28,9 @@ class Xjz
         $user = checkLogin();
         if (!$user) return (returnJson(1, '无权限'));
         $data = Db::table('tb_xjz_content');
+        //学校根据id查出学校名字
+        $data->join('tb_xjz_school', 'tb_xjz_content.school = tb_xjz_school.id');
+        $data->field('tb_xjz_content.*,tb_xjz_school.name as school');
         $count = $data->count();
         $data = $data->page($page, $limit)->select();
         return (returnJson(0, 'success', $data, $count));
