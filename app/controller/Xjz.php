@@ -72,6 +72,17 @@ class Xjz
         $saveName =  Filesystem::disk('public')->putFile( 'xjz', $file, 'md5');
 
         return (returnJson(0, 'success', $saveName));
-
+    }
+    //获取所有区域列表
+    public function getAreaList()
+    {
+        $data = Db::table('tb_xjz_area')->select();
+        return (returnJson(0, 'success', $data));
+    }
+    //获取选中区域所有的学校列表
+    public function getSchoolList($aid = 0)
+    {
+        $data = Db::table('tb_xjz_school')->where('aid', $aid)->select();
+        return (returnJson(0, 'success', $data));
     }
 }

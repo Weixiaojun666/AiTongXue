@@ -19,12 +19,19 @@
         <input type="text" name="name" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
 </div>
-<div class="layui-form-item">
-    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>所在学校</label>
-    <div class="layui-input-block">
-        <input type="text" name="school" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
+    <div class="layui-form-item">
+        <label class="layui-form-label"><span style="color: #ff0000; ">*</span>所在学校</label>
+        <div class="layui-input-inline">
+            <select name="area" lay-verify="required">
+                <option value="" selected>请选择县/区</option>
+            </select>
+        </div>
+        <div class="layui-input-inline" lay-verify="required">
+            <select name="school">
+                <option value="" selected>请选择学校</option>
+            </select>
+        </div>
     </div>
-</div>
 <div class="layui-form-item">
     <label class="layui-form-label"><span style="color: #ff0000; ">*</span>所在班级</label>
     <div class="layui-input-block">
@@ -92,6 +99,54 @@
         var layer = layui.layer;
         var upload = layui.upload;
         var element = layui.element;
+
+        //从后端拉取 区县 学校数据
+        $.ajax({
+            url: '../../xjz/getAreaList',
+            type: 'GET',
+            success: function (data) {
+                if (data.code === 0) {
+                    var school = data.data;
+                    var schoolHtml = '';
+                    schoolHtml += '<option value="" selected>请选择县/区</option>';
+                    for (var i = 0; i < school.length; i++) {
+                        schoolHtml += '<option value="' + school[i].id + '">' + school[i].name + '</option>';
+                    }
+                    $('select[name="area"]').html(schoolHtml);
+                    form.render('select');
+                } else {
+                    layer.msg(data.msg, {icon: 2});
+                }
+            }
+        });
+        //根据选中的区县拉取学校
+        form.on('select', function (data) {
+            //只有当选中的是区县时才会触发
+            if(data.elem.name !== 'area'){
+                return;
+            }
+            var id = data.value;
+            $.ajax({
+                url: '../../xjz/getSchoolList',
+                type: 'GET',
+                data: {aid: id},
+                success: function (data) {
+                    if (data.code === 0) {
+                        var school = data.data;
+                        var schoolHtml = '';
+                        schoolHtml += '<option value="" selected>请选择学校</option>';
+                        for (var i = 0; i < school.length; i++) {
+                            schoolHtml += '<option value="' + school[i].id + '">' + school[i].name + '</option>';
+                        }
+                        $('select[name="school"]').html(schoolHtml);
+                        form.render('select');
+                    } else {
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        });
+
 
         var files = [];
         upload.render({
