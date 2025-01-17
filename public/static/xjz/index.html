@@ -49,18 +49,21 @@
         <input type="text" name="sid" lay-verify="required" autocomplete="off" lay-affix="clear" class="layui-input">
     </div>
 </div>
-<div class="layui-form-item layui-form-text">
-    <label class="layui-form-label"><span style="color: #ff0000; ">*</span>投稿内容</label>
-    <div class="layui-input-block">
-        <textarea placeholder="请输入内容" class="layui-textarea" name="content" lay-verify="required" autocomplete="off" lay-affix="clear" ></textarea>
-    </div>
-</div>
-    <label class="layui-form-label">绘画，书法作品点击选择图片上传</label>
+
+
+    <p style="text-align: center">文字作品直接填入投稿内容</p>
+    <p style="text-align: center">绘画，书法作品点击 图片上传</p>
     <div class="layui-form-item layui-form-text">
-        <label class="layui-form-label">绘画，书法作品点击选择图片上传</label>
+        <label class="layui-form-label"><span style="color: #ff0000; ">*</span>投稿内容</label>
+        <div class="layui-input-block">
+            <textarea placeholder="请输入内容" class="layui-textarea" name="content" autocomplete="off" lay-affix="clear" ></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">图片上传</label>
         <div class="layui-input-block">
             <button type="button" class="layui-btn" id="ID-upload-demo-btn-2">
-                <i class="layui-icon layui-icon-upload"></i> 多图片上传
+                <i class="layui-icon layui-icon-upload"></i> 图片上传
             </button>
             <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 11px;">
                 预览图：
@@ -68,6 +71,7 @@
             </blockquote>
         </div>
     </div>
+
     <div class="layui-upload">
 
     </div>
@@ -92,23 +96,25 @@
         var files = [];
         upload.render({
             elem: '#ID-upload-demo-btn-2',
-            url: '../../xjz/upload', // 实际使用时改成您自己的上传接口即可。
+            url: '../../xjz/upload',
             multiple: true,
             before: function(obj){
-                // 预读本地文件示例，不支持ie8
                 obj.preview(function(index, file, result){
                     $('#upload-demo-preview').append('<img src="'+ result +'" alt="'+ file.name +'" style="width: 90px; height: 90px;">')
                 });
             },
             done: function(res){
                 //获取上传图片的路径
-                var img = res.data.data;
-                files.push(img);
+                 var img = res.data;
+                 files.push(img);
+                 console.log(files);
               layer.msg('上传成功', {icon: 1});
             }
         });
         form.on('submit(demo1)', function (data) {
             var field = data.field;
+            //去掉file
+            delete field.file;
             //如果有图片上传
             if(files.length > 0){
                 field['img'] = files;
@@ -120,7 +126,7 @@
                 success:function (data){
                     if (data.code === 0) {
                         layer.msg('提交成功', {icon: 1});
-                        window.location.href = '../static/xjz/success.html';
+                        window.location.href = '../../static/xjz/success.html';
                 }else{
                         layer.msg(data.msg, {icon: 2});
                         $('img').click();

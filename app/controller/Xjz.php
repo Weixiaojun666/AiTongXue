@@ -12,6 +12,10 @@ class Xjz
     {
         try {
             $data = input('post.');
+            //如果存在img的列表 将其转换为字符串
+            if (isset($data['img']) && is_array($data['img'])) {
+                $data['img'] = implode(',', $data['img']);
+            }
             Db::table('tb_xjz_content')->save($data);
             return (returnJson(msg: "成功"));
         }catch (Exception $e) {
