@@ -30,7 +30,7 @@
             var query = decodeURI(search);
             var currentId = query.substring(query.indexOf('=') + 1);
             params = JSON.parse(currentId);
-            img = "../"+params.img;
+            img = "../../storage/"+params.img;
             if (img === null) {
                 layer.msg('图片加载失败', {icon: 5});
             }
