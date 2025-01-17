@@ -22,11 +22,11 @@
     <div class="layui-form-item">
         <label class="layui-form-label"><span style="color: #ff0000; ">*</span>所在学校</label>
         <div class="layui-input-inline">
-            <select name="area" lay-verify="required">
+            <select name="area" >
                 <option value="" selected>请选择县/区</option>
             </select>
         </div>
-        <div class="layui-input-inline" lay-verify="required">
+        <div class="layui-input-inline">
             <select name="school">
                 <option value="" selected>请选择学校</option>
             </select>
@@ -173,6 +173,11 @@
             //如果有图片上传
             if(files.length > 0){
                 field['img'] = files;
+            }
+            //如果没有选中区县和学校
+            if(field.area === '' || field.school === ''){
+                layer.msg('请选择区县和学校', {icon: 2});
+                return false;
             }
             $.ajax({
                 url:'../../xjz/post',
