@@ -20,7 +20,8 @@ class Record
         }
         $data = Db::table('tb_record_points')
             ->leftjoin('tb_user_student', 'tb_record_points.sid=tb_user_student.id')
-            ->field('tb_record_points.*,tb_user_student.username as username');
+            ->field('tb_record_points.*,tb_user_student.username as username')
+            ->order('tb_record_points.id', 'desc');
         return $this->extracted($username, $data, $id, $page, $limit);
     }
 
@@ -58,7 +59,8 @@ class Record
         }
         $data = Db::table('tb_record_match')
             ->leftjoin('tb_user_student', 'tb_record_match.sid=tb_user_student.id')
-            ->field('tb_record_match.*,tb_user_student.username as username');
+            ->field('tb_record_match.*,tb_user_student.username as username')
+            ->order('tb_record_match.id', 'desc');
         return $this->extracted($username, $data, $id, $page, $limit);
     }
 
@@ -71,7 +73,8 @@ class Record
         }
         $data = Db::table('tb_record_renewal')
             ->leftjoin('tb_user_student', 'tb_record_renewal.sid=tb_user_student.id')
-            ->field('tb_record_renewal.*,tb_user_student.username as username');
+            ->field('tb_record_renewal.*,tb_user_student.username as username')
+            ->order('tb_record_renewal.id', 'desc');
         return $this->extracted($username, $data, $id, $page, $limit);
     }
 
@@ -91,7 +94,8 @@ class Record
             ->leftjoin('tb_subject', 'tb_record_course.sid=tb_subject.id')
             ->leftjoin('tb_course', 'tb_record_course.cid=tb_course.id')
             ->leftJoin('tb_record_course_student', 'tb_record_course.id=tb_record_course_student.cid')
-            ->field('tb_record_course.title,tb_record_course.remark,tb_user.username as username,tb_subject.name as subject,count(tb_record_course_student.id) as student_count');
+            ->field('tb_record_course.title,tb_record_course.remark,tb_user.username as username,tb_subject.name as subject,count(tb_record_course_student.id) as student_count')
+            ->group('tb_record_course.id');
 //        if ($sname) {
 //            $data = $data->where('tb_user_student.username', 'like', '%' . $sname . '%');
 //        }
