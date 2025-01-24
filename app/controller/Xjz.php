@@ -76,6 +76,9 @@ class Xjz
     public function upload()
     {
         $file = request()->file('file');
+        //限制上传文件类型为图片
+
+
 
         $saveName =  Filesystem::disk('public')->putFile( 'xjz', $file, 'md5');
 

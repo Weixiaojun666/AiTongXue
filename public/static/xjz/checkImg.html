@@ -32,12 +32,20 @@
             var currentId = query.substring(query.indexOf('=') + 1);
             params = JSON.parse(currentId);
             //如果有,号,说明是多张图片
+            if (params.img === null) {
+                layer.msg('图片不存在', {icon: 5});
+            }
             if (params.img.indexOf(',') !== -1) {
-                img = "../../storage/"+params.img.split(',')[n];
-                if (img === null) {
-                    layer.msg('图片加载失败', {icon: 5});
-                }
-                $('img').attr('src', img);
+                //如果有多张图片
+
+                //将,号分割的图片地址放到数组中
+                var imgs = params.img.split(',');
+                //将第一张图片地址放到img中
+                img = "../../storage/"+imgs[0];
+
+
+
+                $('img').attr('src',img);
                 //点击图片切换
                 $('img').click(function () {
                     n++;
@@ -47,13 +55,13 @@
                     img = "../../storage/"+params.img.split(',')[n];
                     $('img').attr('src', img);
                 });
+            }else{
+                img = "../../storage/"+params.img;
+                if (img === null) {
+                    layer.msg('图片加载失败', {icon: 5});
+                }
+                $('img').attr('src', img);
             }
-
-            img = "../../storage/"+params.img;
-            if (img === null) {
-                layer.msg('图片加载失败', {icon: 5});
-            }
-            $('img').attr('src', img);
         }
     });
 </script>
