@@ -13,11 +13,6 @@
   <h2 style="text-align: center">小记者投稿查看</h2>
   <br>
   <table id="demoTable" lay-filter="demoTable"></table>
-  <script id="barDemo" type="text/html">
-    <div class="layui-btn-container">
-      <button class="layui-btn layui-btn-sm" lay-event="checkImg">查看图片</button>
-    </div>
-  </script>
 </div>
 
 
@@ -57,7 +52,7 @@
         {field: 'right', title: '查看图片', width: 100,align: 'center'
         , templet: function (d) {
           if (d.img === null) {
-            return '<button class="layui-btn layui-btn-sm layui-btn-disabled" lay-event="checkImg" disabled>查看图片</button>';
+            return '<button class="layui-btn layui-btn-sm layui-btn-disabled" lay-event="checkImg" disabled>无图片</button>';
           }
           return '<button class="layui-btn layui-btn-sm" lay-event="checkImg">查看图片</button>';
         }

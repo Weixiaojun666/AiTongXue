@@ -26,10 +26,29 @@
         var $ = layui.$;
         var search = window.location.search;
         var img =''
+        var n=0;
         if (search !== '') {
             var query = decodeURI(search);
             var currentId = query.substring(query.indexOf('=') + 1);
             params = JSON.parse(currentId);
+            //如果有,号,说明是多张图片
+            if (params.img.indexOf(',') !== -1) {
+                img = "../../storage/"+params.img.split(',')[n];
+                if (img === null) {
+                    layer.msg('图片加载失败', {icon: 5});
+                }
+                $('img').attr('src', img);
+                //点击图片切换
+                $('img').click(function () {
+                    n++;
+                    if (n>=params.img.split(',').length){
+                        n=0;
+                    }
+                    img = "../../storage/"+params.img.split(',')[n];
+                    $('img').attr('src', img);
+                });
+            }
+
             img = "../../storage/"+params.img;
             if (img === null) {
                 layer.msg('图片加载失败', {icon: 5});
