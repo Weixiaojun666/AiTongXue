@@ -54,7 +54,14 @@
         {field: 'teacher', title: '指导老师',width: 90,align: 'center'},
         {field: 'sid', title: '编号',width: 90,align: 'center'},
         {field: 'content', title: '投稿内容', edit: 'textarea',align: 'center'},
-        {field: 'right', title: '查看图片', toolbar: '#barDemo', width: 100,align: 'center'},
+        {field: 'right', title: '查看图片', width: 100,align: 'center'
+        , templet: function (d) {
+          if (d.img === null) {
+            return '<button class="layui-btn layui-btn-sm layui-btn-disabled" lay-event="checkImg" disabled>查看图片</button>';
+          }
+          return '<button class="layui-btn layui-btn-sm" lay-event="checkImg">查看图片</button>';
+        }
+        },
       ]],
     });
     table.on('tool(demoTable)', function (obj) {
