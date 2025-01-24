@@ -60,6 +60,11 @@
     table.on('tool(demoTable)', function (obj) {
       switch (obj.event) {
         case 'checkImg':
+          //如果没有图片
+            if (obj.data.img === null) {
+                layer.msg('未提交图片', {icon: 5});
+                return;
+            }
           layer.open({
             type: 2,
             title: '查看',
