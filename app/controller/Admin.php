@@ -392,8 +392,8 @@ class Admin
 
         $start_time = $data['start_time'];
 
-//        preg_match('/(\d+)时(\d+)分/', $start_time, $matches);
-//        $start_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
+        preg_match('/(\d+)时(\d+)分/', $start_time, $matches);
+        $start_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
 //        $end_time = $data['end_time'];
 //        preg_match('/(\d+)时(\d+)分/', $end_time, $matches);
 //        $end_time = date('H:i:s', $matches[1] * 3600 + $matches[2] * 60 - 8 * 3600);
